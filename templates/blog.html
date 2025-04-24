@@ -1,0 +1,30 @@
+{% include "header.html" %}
+{% block content %}
+<title>Blog | Ticklis</title>
+<div class="container">
+    {% if current_user.is_authenticated and current_user.id == 1 %}
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('add_post') }}" class="tech-button mb-4">Create New Post</a>
+    </div>
+    {% endif %}
+    
+    {% for post in posts %}
+    <div class="feature-card mb-4">
+        <div class="card-body">
+            <h2 class="card-title" style="background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); 
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                {{ post.title }}
+            </h2>
+            <h6 class="card-subtitle mb-3" style="color: var(--text-secondary)">{{ post.subtitle }}</h6>
+            <p class="card-text">{{ post.content|striptags|truncate(400) }}</p>
+            <p class="card-text">
+                <small style="color: var(--text-secondary)">Posted on {{ post.date.strftime('%B %d, %Y') }}</small>
+            </p>
+            <a href="{{ url_for('show_post', post_slug=post.slug) }}" 
+               class="tech-button">Read More</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
+{% include "footer.html" %}

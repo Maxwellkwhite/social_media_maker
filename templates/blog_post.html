@@ -1,0 +1,122 @@
+{% include "header.html" %}
+{% block content %}
+<title>{{ post.title }} | Ticklis</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<div class="blog-post-container container">
+    <article class="blog-post">
+        <h1 class="post-title gradient-text">{{ post.title }}</h1>
+        <h2 class="post-subtitle">{{ post.subtitle }}</h2>
+        <div class="post-meta">
+            <span class="post-date">
+                <i class="far fa-calendar-alt"></i> 
+                {{ post.date.strftime('%B %d, %Y') }}
+            </span>
+        </div>
+        <div class="post-content">
+            {{ post.content | safe }}
+        </div>
+    </article>
+
+    {% if newer_posts or older_posts %}
+    <div class="post-navigation mt-5">
+        {% if newer_posts %}
+        <h3 class="section-title">Newer Posts</h3>
+        <div class="features-grid">
+            {% for post in newer_posts[:5] %}
+            <a href="{{ url_for('show_post', post_slug=post.slug) }}" 
+               class="feature-card">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <small class="text-secondary">{{ post.date.strftime('%B %d, %Y') }}</small>
+                </div>
+                <p class="mb-1">{{ post.subtitle }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if older_posts %}
+        <h3 class="section-title">Older Posts</h3>
+        <div class="features-grid">
+            {% for post in older_posts[:5] %}
+            <a href="{{ url_for('show_post', post_slug=post.slug) }}" 
+               class="feature-card">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <small class="text-secondary">{{ post.date.strftime('%B %d, %Y') }}</small>
+                </div>
+                <p class="mb-1">{{ post.subtitle }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="share-section">
+        <h3 class="section-title">Share This Post</h3>
+        <div class="share-buttons">
+            <a href="https://twitter.com/intent/tweet?text={{ post.title|urlencode }}&url={{ request.url|urlencode }}" 
+               target="_blank" 
+               class="share-button">
+                <i class="fab fa-twitter"></i> Twitter
+            </a>
+            
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url|urlencode }}"
+               target="_blank"
+               class="share-button">
+                <i class="fab fa-facebook"></i> Facebook
+            </a>
+            
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.url|urlencode }}&title={{ post.title|urlencode }}"
+               target="_blank"
+               class="share-button">
+                <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+
+            <a href="mailto:?subject={{ post.title|urlencode }}&body={{ request.url|urlencode }}"
+               class="share-button">
+                <i class="fas fa-envelope"></i> Email
+            </a>
+            
+            <button class="share-button"
+                    id="copyLinkBtn"
+                    data-url="{{ request.url }}">
+                <i class="fas fa-link"></i> Copy Link
+            </button>
+        </div>
+    </div>
+
+    {% if related_posts %}
+    <div class="related-posts">
+        <h3 class="section-title">Related Posts</h3>
+        <div class="features-grid">
+            {% for related_post in related_posts %}
+            <div class="feature-card">
+                <h4><a href="{{ url_for('show_post', post_slug=related_post.slug) }}">
+                    {{ related_post.title }}
+                </a></h4>
+                <p>{{ related_post.subtitle }}</p>
+                <small class="text-secondary">{{ related_post.date.strftime('%B %d, %Y') }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="related-posts">
+        <div class="features-grid">
+            {% for post in random_posts[:4] %}
+            <div class="feature-card">
+                <h4><a href="{{ url_for('show_post', post_slug=post.slug) }}">
+                    {{ post.title }}
+                </a></h4>
+                <p>{{ post.content|striptags|truncate(100) }}</p>
+                <small class="text-secondary">{{ post.date.strftime('%B %d, %Y') }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
+{% include "footer.html" %}

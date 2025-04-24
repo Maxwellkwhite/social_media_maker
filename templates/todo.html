@@ -1,0 +1,2859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ticklis - A smart productivity task manager and to-do list application that helps you organize and track your daily tasks efficiently with intelligent features.">
+    <meta name="keywords" content="Ticklis, task management, to-do list, productivity, task organizer, smart list, task manager">
+    <meta name="robots" content="index, follow">
+    <title>Ticklis - Smart Task Management & Productivity Organizer</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Ticklis - Smart Task Management">
+    <meta property="og:description" content="Organize and track your tasks efficiently with Ticklis, the intelligent task management solution.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://Ticklis.com">
+    <meta property="og:image" content="https://Ticklis.com/static/images/logo.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://Ticklis.com">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Ticklis",
+        "description": "A smart productivity task manager and to-do list application",
+        "url": "https://Ticklis.com",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EHC0W80VQP"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-EHC0W80VQP');
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #1a1a1a;
+            height: 100vh;
+            position: fixed;
+            left: -200px;
+            top: 0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-x: hidden;
+            visibility: hidden;
+        }
+
+        .sidebar.active {
+            left: 0;
+            visibility: visible;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #1a1a1a;
+            border: none;
+            border-radius: 50%;
+            color: #3498db;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 1001;
+            transition: left 0.3s ease, background-color 0.2s;
+        }
+
+        .menu-toggle.active {
+            left: 220px;
+        }
+
+        .menu-toggle:hover {
+            background-color: #383838;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: #383838;
+        }
+
+        .sidebar-nav i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-right: 80px;
+            margin-left: 0;
+            flex: 1;
+            padding: 40px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-active {
+            margin-left: 200px;
+        }
+
+        .container {
+            background-color: #2d2d2d;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+
+        /* Mobile-specific container styles */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+                padding: 20px;
+                margin: 20px auto;
+            }
+
+            .main-content {
+                padding: 20px;
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+        }
+
+        .navbar {
+            background-color: #2d2d2d !important;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            color: #3498db !important;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: #e0e0e0 !important;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #3498db !important;
+        }
+
+        .navbar-toggler {
+            border-color: #444;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .info-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .info-button:hover {
+            background-color: #2980b9;
+        }
+
+        h1 {
+            color: #3498db;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .todo-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            transition: background-color 0.2s;
+        }
+
+        .todo-item:hover {
+            background-color: #383838;
+        }
+
+        .todo-item input[type="checkbox"] {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+        }
+
+        .todo-item.completed span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .todo-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 1.2rem;
+        }
+
+        .due-date {
+            font-size: 14px;
+            padding: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .due-date:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .due-date.overdue {
+            color: #ff6b6b;
+        }
+
+        .due-date.upcoming {
+            color: #ffd93d;
+        }
+
+        .due-date.normal {
+            color: #3498db;
+        }
+
+        .calendar-icon {
+            font-size: 16px;
+        }
+
+        .date-text {
+            display: none;
+        }
+
+        .due-date[data-due-date]:hover::after {
+            content: attr(data-due-date);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            margin-bottom: 5px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .date-picker {
+            position: absolute;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .date-picker input[type="date"] {
+            background: #383838;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .date-picker input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        .date-picker button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+        .date-picker button:hover {
+            background: #2980b9;
+        }
+
+        .date-picker button.clear {
+            background: #e74c3c;
+        }
+
+        .date-picker button.clear:hover {
+            background: #c0392b;
+        }
+
+        .todo-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            font-size: 1.2rem;
+            padding: 5px;
+            outline: none;
+        }
+
+        .todo-input:focus {
+            background-color: #383838;
+            border-radius: 4px;
+        }
+
+        .empty-item {
+            color: #888;
+            font-style: italic;
+        }
+
+        .suggestion-btn {
+            background: none;
+            color: #3498db;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 12px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .suggestion-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-btn i {
+            font-size: 22px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #2d2d2d;
+            margin: 5% auto;
+            padding: 15px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 12px;
+            top: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .close-modal:hover {
+            color: #e0e0e0;
+        }
+
+        .suggestion-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestion-category {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #383838;
+            border-radius: 4px;
+        }
+
+        .suggestion-category h3 {
+            text-align: center;
+            color: #3498db;
+            margin: 0 0 8px 0;
+            font-size: 14px;
+        }
+
+        .suggestion-item {
+            padding: 8px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .suggestion-item p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .trigger-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .trigger-category {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #383838;
+            border-radius: 4px;
+        }
+
+        .trigger-category h3 {
+            text-align: center;
+            color: #3498db;
+            margin: 0 0 6px 0;
+            font-size: 14px;
+        }
+
+        .trigger-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .trigger-word {
+            background-color: #2d2d2d;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            color: #e0e0e0;
+        }
+
+        #infoModal .modal-content h2 {
+            text-align: center;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            width: 100%;
+        }
+
+        #infoModal .modal-content p {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* Remove auth button styles */
+        .auth-buttons {
+            display: none;
+        }
+
+        .auth-btn {
+            display: none;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        /* Add styles for completion time */
+        .completion-time {
+            font-size: 12px;
+            color: #888;
+            margin-left: 10px;
+        }
+
+        .alert {
+            background-color: #383838;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            position: relative;
+            border-left: 4px solid #3498db;
+        }
+
+        .alert-info {
+            border-left-color: #3498db;
+        }
+
+        .btn-close {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .btn-close:hover {
+            color: #e0e0e0;
+        }
+
+        /* Add filter styles */
+        .task-filter {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        /* Hide filter buttons on mobile */
+        @media (max-width: 768px) {
+            .task-filter {
+                display: none;
+            }
+        }
+
+        .filter-btn {
+            background: none;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-btn:hover {
+            background-color: #383838;
+        }
+
+        .filter-btn.active {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        .filter-btn i {
+            font-size: 16px;
+        }
+
+        /* Add styles for more options button and toolbar */
+        .more-options-btn {
+            background: none;
+            border: none;
+            color: #888;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        /* Hide the due date button */
+        .due-date {
+            display: none !important;
+        }
+
+        .more-options-btn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .task-toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #2d2d2d;
+            padding: 15px;
+            display: none;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            transform: translateY(100%);
+        }
+
+        .task-toolbar.active {
+            display: flex;
+            transform: translateY(0);
+        }
+
+        .toolbar-btn {
+            background-color: #383838;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #444;
+        }
+
+        .toolbar-btn i {
+            font-size: 14px;
+        }
+
+        .toolbar-btn.active {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        /* Remove tag-related styles */
+        .tag-input-container,
+        .tag-input,
+        .tag-suggestions,
+        .tag-suggestion,
+        .todo-tags,
+        .todo-tag,
+        .remove-tag {
+            display: none;
+        }
+
+        /* Add styles for task info */
+        .task-info {
+            padding: 15px;
+            background-color: #383838;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .task-info p {
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        .task-info strong {
+            color: #3498db;
+            margin-right: 8px;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-style: italic;
+        }
+
+        /* Add styles for tags modal */
+        .tags-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #383838;
+            border-radius: 4px;
+        }
+
+        .tags-section h3 {
+            color: #3498db;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            opacity: 0.8;
+        }
+
+        .tag i {
+            margin-left: 6px;
+            font-size: 10px;
+        }
+
+        .new-tag-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tag-input {
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .tag-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-picker label {
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .color-picker input[type="color"] {
+            -webkit-appearance: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-picker input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 4px;
+        }
+
+        .create-tag-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .create-tag-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .create-tag-btn i {
+            font-size: 12px;
+        }
+
+        .tag-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .create-tag-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            width: 32px;
+            height: 32px;
+        }
+
+        .create-tag-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .create-tag-btn i {
+            font-size: 12px;
+        }
+
+        .tag-input {
+            flex: 1;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .tag-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        /* Add delete task functionality */
+        .toolbar-btn.delete {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .toolbar-btn.delete:hover {
+            background-color: #c0392b;
+            border-color: #c0392b;
+        }
+
+        .feedback-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .feedback-button:hover, .feedback-button:active {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .feedback-button i {
+            font-size: 1.4rem;
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .feedback-button {
+                width: 60px;
+                height: 60px;
+                bottom: 16px;
+                left: 16px;
+            }
+
+            .feedback-button i {
+                font-size: 1.6rem;
+            }
+
+            /* Add a larger touch target */
+            .feedback-button::after {
+                content: '';
+                position: absolute;
+                top: -10px;
+                left: -10px;
+                right: -10px;
+                bottom: -10px;
+            }
+        }
+
+        /* Prevent text selection on tap */
+        .feedback-button {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Improve touch feedback */
+        .feedback-button:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        /* Larger screens */
+        @media (min-width: 1200px) {
+            h1 {
+                font-size: 3rem;
+                margin-bottom: 40px;
+            }
+
+            .todo-input {
+                font-size: 1.4rem;
+                padding: 8px;
+            }
+
+            .todo-text {
+                font-size: 1.4rem;
+            }
+
+            .todo-item {
+                padding: 15px;
+            }
+        }
+
+        .btn, .submit-btn, .toolbar-btn, .filter-btn, .feedback-button, .info-button, .more-options-btn, .create-tag-btn, .home-button {
+            font-weight: 700;
+            font-size: 1.15em;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.18);
+            letter-spacing: 0.5px;
+            text-transform: none;
+        }
+
+        /* Pronounced tooltip style */
+        .tooltip {
+            position: absolute;
+            z-index: 2000;
+            background: #222;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 1.5px 4px rgba(52,152,219,0.10);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s, transform 0.18s;
+            transform: scale(0.98);
+            white-space: nowrap;
+            left: 0;
+            top: 0;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1.04);
+        }
+
+        .suggestion-btn {
+            position: relative;
+        }
+
+        .more-options-btn i {
+            font-size: 22px;
+        }
+
+        #suggestionModal .modal-content h2 {
+            text-align: center;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            width: 100%;
+        }
+
+        .suggestion-form {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #383838;
+            border-radius: 4px;
+        }
+
+        .suggestion-form h3 {
+            color: #3498db;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .suggestion-form .form-group {
+            margin-bottom: 10px;
+        }
+
+        .suggestion-input {
+            width: 100%;
+            padding: 8px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .suggestion-form button {
+            width: 100%;
+            padding: 8px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 14px;
+        }
+
+        .suggestion-form button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar">
+        <ul class="sidebar-nav">
+            {% if current_user.is_authenticated %}
+                <li>
+                    <a href="/feedback">
+                        <i class="fas fa-comments"></i>
+                        Feedback
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('logout') }}" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+                <li>
+                    <a href="mailto:mwdynamicsinc@gmail.com">
+                        <i class="fas fa-envelope"></i>
+                        Support
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('login') }}">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('register') }}">
+                        <i class="fas fa-user-plus"></i>
+                        Register
+                    </a>
+                </li>
+                <li>
+                    <a href="/feedback">
+                        <i class="fas fa-comments"></i>
+                        Feedback
+                    </a>
+                </li>
+                <li>
+                    <a href="mailto:mwdynamicsinc@gmail.com">
+                        <i class="fas fa-envelope"></i>
+                        Support
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info">
+                {{ message }}
+                <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% if not current_user.is_authenticated %}
+            <div class="login-warning" style="background-color: #d7e6e6; color: #343434; padding: 1rem; text-align: center; border: 1px solid #d7e6e6; margin-bottom: 1rem; border-radius: 4px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Since you are not logged in, your tasks may not save. 
+                <a href="{{ url_for('register') }}" style="color: #7b9196; text-decoration: underline;">Register</a> or 
+                <a href="{{ url_for('login') }}" style="color: #7b9196; text-decoration: underline;">Login</a> now to save new tasks.
+            </div>
+            {% endif %}
+            <h1>Task List</h1>
+            <button class="info-button" onclick="showInfoModal()" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+                <i class="fas fa-info"></i>
+                <span class="tooltip">Info &amp; Trigger Words</span>
+            </button>
+            
+            <div class="task-filter">
+                <button class="filter-btn active" data-filter="all" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+                    <i class="fas fa-tasks"></i>
+                    <span class="tooltip">Show all tasks</span>
+                </button>
+                <button class="filter-btn" data-filter="active" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+                    <i class="fas fa-clock"></i>
+                    <span class="tooltip">Show active tasks</span>
+                </button>
+                <button class="filter-btn" data-filter="completed" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="tooltip">Show completed tasks</span>
+                </button>
+            </div>
+            
+            <ul class="todo-list" id="todo-list">
+                <li class="todo-item">
+                    <input type="text" class="todo-input empty-item" placeholder="Write a new task..." onkeypress="handleNewTask(event)">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Add audio element for the completion sound -->
+    <audio id="completionSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeInfoModal()">&times;</span>
+            <h2>Available Trigger Words</h2>
+            <p>Type any of these words in your task to get relevant tool suggestions:</p>
+            
+            <!-- Applications Section -->
+            <div class="trigger-category">
+                <h3>Applications</h3>
+                <div class="trigger-words" id="appTriggerWords">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+
+            <div style="height: 1px; background-color: #444; margin: 15px 0;"></div>
+
+            <!-- Generic Categories Section -->
+            <ul class="trigger-list" id="categoryTriggerWords">
+                <!-- Will be populated dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Suggestion Modal -->
+    <div id="suggestionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Suggestions</h2>
+            <ul id="suggestionList" class="suggestion-list">
+                <!-- Suggestions will be populated here -->
+            </ul>
+            <div class="suggestion-form">
+                <h3>Add Your Own Suggestion</h3>
+                <div class="form-group">
+                    <input type="text" id="suggestionName" placeholder="Enter tool name..." class="suggestion-input">
+                </div>
+                <button onclick="submitSuggestion()">Submit Suggestion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Info Modal -->
+    <div id="taskInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeTaskInfoModal()">&times;</span>
+            <h2>Task Information</h2>
+            <div id="taskInfoContent">
+                <!-- Task information will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tags Modal -->
+    <div id="tagsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeTagsModal()">&times;</span>
+            <h2>Manage Tags</h2>
+            
+            <!-- Previous Tags Section -->
+            <div class="tags-section">
+                <h3>Previous Tags</h3>
+                <div class="tags-container" id="previousTags">
+                    <!-- Tags will be populated here -->
+                </div>
+            </div>
+
+            <!-- Create New Tag Section -->
+            <div class="tags-section">
+                <h3>Create New Tag</h3>
+                <div class="new-tag-form">
+                    <div class="tag-input-group">
+                        <input type="text" id="newTagInput" placeholder="Enter tag name..." class="tag-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Toolbar -->
+    <div class="task-toolbar" id="taskToolbar">
+        <button class="toolbar-btn" onclick="showTaskInfo()" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+            <i class="fas fa-info-circle"></i>
+            <span class="tooltip">View task information</span>
+        </button>
+        <button class="toolbar-btn" onclick="deleteTask()" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+            <i class="fas fa-trash"></i>
+            <span class="tooltip">Delete task</span>
+        </button>
+    </div>
+
+    <script>
+        // Add sidebar toggle function
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            sidebar.classList.toggle('active');
+            mainContent.classList.toggle('sidebar-active');
+            menuToggle.classList.toggle('active');
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target) && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                mainContent.classList.remove('sidebar-active');
+                menuToggle.classList.remove('active');
+            }
+        });
+
+        // Add authentication state
+        const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+        const currentUserId = {{ current_user.id if current_user.is_authenticated else 'null' }};
+
+        // Add filter functionality
+        let currentFilter = 'all';
+
+        function updateFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === currentFilter);
+            });
+        }
+
+        function filterTasks() {
+            const todoItems = document.querySelectorAll('.todo-item');
+            todoItems.forEach(item => {
+                if (item.querySelector('input[type="text"]')) return; // Skip the input field
+                
+                const isCompleted = item.classList.contains('completed');
+                switch (currentFilter) {
+                    case 'all':
+                        item.style.display = '';
+                        break;
+                    case 'active':
+                        item.style.display = isCompleted ? 'none' : '';
+                        break;
+                    case 'completed':
+                        item.style.display = isCompleted ? '' : 'none';
+                        break;
+                }
+            });
+        }
+
+        // Add event listeners for filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentFilter = btn.dataset.filter;
+                updateFilterButtons();
+                filterTasks();
+            });
+        });
+
+        // Helper function to format due date consistently
+        function formatDueDate(dueDate) {
+            if (!dueDate) return null;
+            
+            console.log('=== Formatting Due Date ===');
+            console.log('1. Input due date:', dueDate);
+            
+            // Create date object with local timezone
+            const [year, month, day] = dueDate.split('-').map(Number);
+            // Use local timezone by explicitly setting year, month, day
+            const date = new Date(year, month - 1, day);
+            console.log('2. Parsed date:', date.toLocaleDateString());
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            console.log('3. Reference dates:');
+            console.log('   Today:', today.toLocaleDateString());
+            console.log('   Tomorrow:', tomorrow.toLocaleDateString());
+            
+            let result;
+            if (date.toDateString() === today.toDateString()) {
+                result = 'Today';
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                result = 'Tomorrow';
+            } else {
+                result = date.toLocaleDateString();
+            }
+            
+            console.log('4. Formatted result:', result);
+            return result;
+        }
+
+        // Helper function to get date status class
+        function getDateStatusClass(dueDate, completed) {
+            if (!dueDate) return '';
+            
+            // Create date object with local timezone
+            const [year, month, day] = dueDate.split('-').map(Number);
+            const date = new Date(year, month - 1, day);
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (date < today && !completed) {
+                return 'overdue';
+            } else if (date.getTime() - today.getTime() <= 2 * 24 * 60 * 60 * 1000) {
+                return 'upcoming';
+            } else {
+                return 'normal';
+            }
+        }
+
+        // Update setDueDate to handle both authenticated and unauthenticated users
+        async function setDueDate(button, todoId) {
+            const picker = button.parentElement;
+            const dateInput = picker.querySelector('input[type="date"]');
+            const date = dateInput.value;
+            
+            console.log('=== Setting Due Date ===');
+            console.log('1. Raw input date:', date);
+            
+            if (!date) {
+                console.log('No date selected, clearing due date');
+                clearDueDate(button, todoId);
+                return;
+            }
+            
+            // Store just the date portion (YYYY-MM-DD)
+            const dateOnly = date;
+            console.log('2. Date to be stored:', dateOnly);
+            
+            if (isAuthenticated) {
+                console.log('3. Authenticated: Sending to server');
+                try {
+                    const response = await fetch(`/api/todos/${todoId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ due_date: dateOnly })
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            console.log('Authentication failed');
+                            window.location.href = '/login';
+                            return;
+                        }
+                        throw new Error('Failed to update todo');
+                    }
+
+                    console.log('4. Successfully updated on server');
+                    loadTodos();
+                    picker.remove();
+                } catch (error) {
+                    console.error('Error updating todo:', error);
+                    alert('Failed to set due date. Please try again.');
+                }
+            } else {
+                console.log('3. Not authenticated: Storing in localStorage');
+                const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const todoIndex = todos.findIndex(t => t.id === parseInt(todoId));
+                if (todoIndex !== -1) {
+                    todos[todoIndex].due_date = dateOnly;
+                    localStorage.setItem('todos', JSON.stringify(todos));
+                    console.log('4. Successfully stored in localStorage');
+                    console.log('   Stored date:', todos[todoIndex].due_date);
+                    loadTodos();
+                    picker.remove();
+                }
+            }
+        }
+
+        // Update clearDueDate to handle both authenticated and unauthenticated users
+        async function clearDueDate(button, todoId) {
+            const picker = button.parentElement;
+            
+            if (isAuthenticated) {
+                try {
+                    const response = await fetch(`/api/todos/${todoId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ due_date: null })
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        throw new Error('Failed to update todo');
+                    }
+
+                    loadTodos();
+                    picker.remove();
+                } catch (error) {
+                    console.error('Error updating todo:', error);
+                    alert('Failed to clear due date. Please try again.');
+                }
+            } else {
+                // Update todo in localStorage
+                const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const todoIndex = todos.findIndex(t => t.id === parseInt(todoId));
+                if (todoIndex !== -1) {
+                    todos[todoIndex].due_date = null;
+                    localStorage.setItem('todos', JSON.stringify(todos));
+                    loadTodos();
+                    picker.remove();
+                }
+            }
+        }
+
+        // Update the date display logic in loadTodos
+        function updateDueDateDisplay(dateElement, dueDate, completed) {
+            if (!dueDate) return;
+            
+            console.log('=== Updating Date Display ===');
+            console.log('1. Input due date:', dueDate);
+            console.log('2. Task completed:', completed);
+            
+            const dateText = formatDueDate(dueDate);
+            console.log('3. Formatted date text:', dateText);
+            
+            dateElement.dataset.dueDate = dateText;
+            const statusClass = getDateStatusClass(dueDate, completed);
+            console.log('4. Status class:', statusClass);
+            
+            dateElement.classList.add(statusClass);
+        }
+
+        // Function to load todos
+        async function loadTodos() {
+            if (!isAuthenticated) {
+                // Load todos from localStorage
+                const localTodos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const todoList = document.getElementById('todo-list');
+                todoList.innerHTML = '';
+                
+                localTodos.forEach(todo => {
+                    const li = createTodoItem(todo);
+                    
+                    if (todo.due_date) {
+                        const dateElement = li.querySelector('.due-date');
+                        updateDueDateDisplay(dateElement, todo.due_date, todo.completed);
+                    }
+                    
+                    todoList.appendChild(li);
+                });
+            } else {
+                // Load todos from server
+                try {
+                    const response = await fetch('/api/todos');
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        throw new Error('Failed to load todos');
+                    }
+                    const todos = await response.json();
+                    
+                    const todoList = document.getElementById('todo-list');
+                    todoList.innerHTML = '';
+                    
+                    todos.forEach(todo => {
+                        const li = createTodoItem(todo);
+                        
+                        if (todo.due_date) {
+                            const dateElement = li.querySelector('.due-date');
+                            updateDueDateDisplay(dateElement, todo.due_date, todo.completed);
+                        }
+                        
+                        todoList.appendChild(li);
+                    });
+                } catch (error) {
+                    console.error('Error loading todos:', error);
+                    alert('Failed to load todos. Please try again.');
+                }
+            }
+            
+            // Add new task input
+            const newItem = document.createElement('li');
+            newItem.className = 'todo-item';
+            newItem.innerHTML = `
+                <input type="text" class="todo-input empty-item" placeholder="Write a new task..." onkeypress="handleNewTask(event)">
+            `;
+            document.getElementById('todo-list').appendChild(newItem);
+            newItem.querySelector('.todo-input').focus();
+        }
+
+        // Function to handle logout
+        async function logout() {
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    throw new Error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Failed to logout. Please try again.');
+            }
+        }
+
+        // Update handleNewTask to handle both authenticated and unauthenticated users
+        async function handleNewTask(event) {
+            if (event.key === 'Enter') {
+                const input = event.target;
+                const taskText = input.value.trim();
+                
+                if (taskText === '') return;
+
+                if (isAuthenticated) {
+                    try {
+                        const response = await fetch('/api/todos', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ text: taskText })
+                        });
+
+                        if (!response.ok) {
+                            if (response.status === 401) {
+                                window.location.href = '/login';
+                                return;
+                            }
+                            throw new Error('Failed to add todo');
+                        }
+
+                        const newTodo = await response.json();
+                        const todoList = document.getElementById('todo-list');
+                        const newItem = createTodoItem(newTodo);
+                        
+                        // Insert before the input field
+                        const inputItem = todoList.querySelector('.empty-item').parentElement;
+                        todoList.insertBefore(newItem, inputItem);
+                        
+                        // Clear input
+                        input.value = '';
+                        
+                    } catch (error) {
+                        console.error('Error adding todo:', error);
+                        alert('Failed to add todo. Please try again.');
+                    }
+                } else {
+                    // Add todo to localStorage
+                    const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                    const newTodo = {
+                        id: Date.now(),
+                        text: taskText,
+                        completed: false,
+                        due_date: null,
+                        completed_at: null,
+                        created_at: new Date().toISOString()
+                    };
+                    todos.push(newTodo);
+                    localStorage.setItem('todos', JSON.stringify(todos));
+                    
+                    // Clear input and reload todos
+                    input.value = '';
+                    loadTodos();
+                }
+            }
+        }
+
+        // Update toggleTask to handle both authenticated and unauthenticated users
+        async function toggleTask(checkbox, todoId) {
+            if (isAuthenticated) {
+                try {
+                    const response = await fetch(`/api/todos/${todoId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ completed: checkbox.checked })
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        throw new Error('Failed to update todo');
+                    }
+
+                    const updatedTodo = await response.json();
+                    const todoItem = checkbox.parentElement;
+                    
+                    if (checkbox.checked) {
+                        todoItem.classList.add('completed');
+                        // Play sound and trigger confetti
+                        const sound = document.getElementById('completionSound');
+                        sound.volume = 0.3;
+                        sound.currentTime = 0;
+                        sound.play().catch(error => console.log('Sound play failed:', error));
+                        triggerConfetti();
+                    } else {
+                        todoItem.classList.remove('completed');
+                    }
+
+                    // Update completion time display
+                    const completionTime = todoItem.querySelector('.completion-time');
+                    if (completionTime) {
+                        if (updatedTodo.completed_at) {
+                            completionTime.textContent = `Completed: ${new Date(updatedTodo.completed_at).toLocaleString()}`;
+                        } else {
+                            completionTime.textContent = '';
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.error('Error updating todo:', error);
+                    checkbox.checked = !checkbox.checked;
+                    alert('Failed to update todo. Please try again.');
+                }
+            } else {
+                // Update todo in localStorage
+                const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const todoIndex = todos.findIndex(t => t.id === todoId);
+                if (todoIndex !== -1) {
+                    todos[todoIndex].completed = checkbox.checked;
+                    if (checkbox.checked) {
+                        todos[todoIndex].completed_at = new Date().toISOString();
+                    } else {
+                        todos[todoIndex].completed_at = null;
+                    }
+                    localStorage.setItem('todos', JSON.stringify(todos));
+                    
+                    if (checkbox.checked) {
+                        checkbox.parentElement.classList.add('completed');
+                        // Play sound and trigger confetti
+                        const sound = document.getElementById('completionSound');
+                        sound.volume = 0.3;
+                        sound.currentTime = 0;
+                        sound.play().catch(error => console.log('Sound play failed:', error));
+                        triggerConfetti();
+                    } else {
+                        checkbox.parentElement.classList.remove('completed');
+                    }
+                    
+                    // Reload todos to update completion time
+                    loadTodos();
+                }
+            }
+        }
+
+        // Load todos when page loads
+        document.addEventListener('DOMContentLoaded', loadTodos);
+
+        // Application registry with name variations
+        const appRegistry = {
+            'Microsoft Visio': {
+                variations: ['visio', 'microsoft visio'],
+                app_name: 'visio',
+                description: 'Professional diagramming and flowchart software',
+                category: 'flowchart'
+            },
+            'PowerPoint': {
+                variations: ['powerpoint', 'power point', 'ppt', 'pptx'],
+                app_name: 'powerpoint',
+                description: 'Microsoft\'s professional presentation software',
+                category: 'presentation'
+            },
+            'Excel': {
+                variations: ['excel', 'microsoft excel', 'spreadsheet'],
+                app_name: 'excel',
+                description: 'Microsoft\'s professional spreadsheet software',
+                category: 'spreadsheet'
+            },
+            'Numbers': {
+                variations: ['numbers', 'apple numbers'],
+                app_name: 'numbers',
+                description: 'Apple\'s spreadsheet software',
+                category: 'spreadsheet'
+            },
+            'OneNote': {
+                variations: ['onenote', 'one note', 'microsoft onenote'],
+                app_name: 'onenote',
+                description: 'Microsoft\'s professional note-taking app',
+                category: 'notes'
+            },
+            'Evernote': {
+                variations: ['evernote'],
+                app_name: 'evernote',
+                description: 'Business note-taking and organization tool',
+                category: 'notes'
+            },
+            'Microsoft To Do': {
+                variations: ['todo', 'to do', 'microsoft todo', 'microsoft to do'],
+                app_name: 'todo',
+                description: 'Microsoft\'s task management app',
+                category: 'task'
+            },
+            'Asana': {
+                variations: ['asana'],
+                app_name: 'asana',
+                description: 'Professional project management tool',
+                category: 'task'
+            },
+            'Trello': {
+                variations: ['trello'],
+                app_name: 'trello',
+                description: 'Visual project management platform',
+                category: 'task'
+            },
+            'Adobe Photoshop': {
+                variations: ['photoshop', 'ps', 'adobe photoshop'],
+                app_name: 'photoshop',
+                description: 'Professional image editing software',
+                category: 'image'
+            },
+            'Adobe Illustrator': {
+                variations: ['illustrator', 'ai', 'adobe illustrator'],
+                app_name: 'illustrator',
+                description: 'Vector graphics software',
+                category: 'image'
+            },
+            'Adobe Premiere Pro': {
+                variations: ['premiere', 'premiere pro', 'adobe premiere'],
+                app_name: 'premiere',
+                description: 'Professional video editing software',
+                category: 'video'
+            },
+            'Camtasia': {
+                variations: ['camtasia'],
+                app_name: 'camtasia',
+                description: 'Screen recording and video editing',
+                category: 'video'
+            },
+            'DaVinci Resolve': {
+                variations: ['davinci', 'davinci resolve'],
+                app_name: 'davinci',
+                description: 'Professional video editing suite',
+                category: 'video'
+            },
+            'Zoom': {
+                variations: ['zoom'],
+                app_name: 'zoom',
+                description: 'Video conferencing software',
+                category: 'meeting'
+            },
+            'Microsoft Teams': {
+                variations: ['teams', 'microsoft teams'],
+                app_name: 'teams',
+                description: 'Team collaboration platform',
+                category: 'meeting'
+            },
+            'Gmail': {
+                variations: ['gmail', 'google mail'],
+                app_name: 'gmail',
+                description: 'Email client',
+                category: 'email'
+            },
+            'Outlook': {
+                variations: ['outlook', 'microsoft outlook'],
+                app_name: 'outlook',
+                description: 'Email client',
+                category: 'email'
+            },
+            'Slack': {
+                variations: ['slack'],
+                app_name: 'slack',
+                description: 'Team collaboration platform',
+                category: 'chat'
+            },
+            'Microsoft Word': {
+                variations: ['word', 'microsoft word', 'ms word'],
+                app_name: 'word',
+                description: 'Professional word processing software',
+                category: 'document'
+            },
+            'Adobe Acrobat Pro': {
+                variations: ['acrobat', 'adobe acrobat', 'pdf editor'],
+                app_name: 'acrobat',
+                description: 'PDF creation and editing software',
+                category: 'document'
+            },
+            'Microsoft Project': {
+                variations: ['project', 'microsoft project', 'ms project'],
+                app_name: 'project',
+                description: 'Professional project management software',
+                category: 'project'
+            },
+            'Dropbox': {
+                variations: ['dropbox'],
+                app_name: 'dropbox',
+                description: 'Cloud storage and file sharing',
+                category: 'storage'
+            },
+            'OneDrive': {
+                variations: ['onedrive', 'one drive', 'microsoft onedrive'],
+                app_name: 'onedrive',
+                description: 'Microsoft cloud storage',
+                category: 'storage'
+            },
+            'Sketch': {
+                variations: ['sketch'],
+                app_name: 'sketch',
+                description: 'Digital design platform',
+                category: 'design'
+            },
+            'Adobe XD': {
+                variations: ['xd', 'adobe xd'],
+                app_name: 'xd',
+                description: 'UI/UX design tool',
+                category: 'design'
+            },
+            'Visual Studio Code': {
+                variations: ['vscode', 'visual studio code', 'code'],
+                app_name: 'vscode',
+                description: 'Code editor',
+                category: 'development'
+            },
+            'IntelliJ': {
+                variations: ['intellij', 'intellij idea'],
+                app_name: 'intellij',
+                description: 'Java IDE',
+                category: 'development'
+            },
+            'Sublime Text': {
+                variations: ['sublime', 'sublime text'],
+                app_name: 'sublime',
+                description: 'Text editor',
+                category: 'development'
+            },
+            'Tableau': {
+                variations: ['tableau'],
+                app_name: 'tableau',
+                description: 'Data visualization software',
+                category: 'analytics'
+            },
+            'Power BI': {
+                variations: ['powerbi', 'power bi', 'microsoft power bi'],
+                app_name: 'powerbi',
+                description: 'Business analytics tool',
+                category: 'analytics'
+            },
+            'MySQL Workbench': {
+                variations: ['mysql', 'mysql workbench'],
+                app_name: 'mysql',
+                description: 'Database management tool',
+                category: 'database'
+            },
+            'pgAdmin': {
+                variations: ['pgadmin', 'postgres', 'postgresql'],
+                app_name: 'pgadmin',
+                description: 'PostgreSQL management tool',
+                category: 'database'
+            },
+            'MongoDB Compass': {
+                variations: ['mongodb', 'mongo'],
+                app_name: 'mongodb',
+                description: 'MongoDB GUI',
+                category: 'database'
+            }
+        };
+
+        // Keep the existing suggestions object for category-based suggestions
+        const suggestions = {
+            'flow': [
+                { name: 'Lucidchart', url: 'https://www.lucidchart.com', description: 'Enterprise-grade diagramming tool' },
+                { name: 'Draw.io', url: 'https://app.diagrams.net', description: 'Free online diagram software' },
+                { name: 'Miro', url: 'https://miro.com', description: 'Online collaborative whiteboarding platform' }
+            ],
+            'flowchart': [
+                { name: 'Lucidchart', url: 'https://www.lucidchart.com', description: 'Enterprise-grade diagramming tool' },
+                { name: 'Draw.io', url: 'https://app.diagrams.net', description: 'Free online diagram software' },
+                { name: 'Miro', url: 'https://miro.com', description: 'Online collaborative whiteboarding platform' }
+            ],
+            'diagram': [
+                { name: 'Lucidchart', url: 'https://www.lucidchart.com', description: 'Enterprise-grade diagramming tool' },
+                { name: 'Draw.io', url: 'https://app.diagrams.net', description: 'Free online diagram software' },
+                { name: 'Miro', url: 'https://miro.com', description: 'Online collaborative whiteboarding platform' }
+            ],
+            'present': [
+                { name: 'Google Slides', url: 'https://slides.google.com', description: 'Cloud-based presentation tool' },
+                { name: 'Prezi', url: 'https://prezi.com', description: 'Dynamic presentation platform' },
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design and presentation tool' }
+            ],
+            'deck': [
+                { name: 'Google Slides', url: 'https://slides.google.com', description: 'Cloud-based presentation tool' },
+                { name: 'Prezi', url: 'https://prezi.com', description: 'Dynamic presentation platform' },
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design and presentation tool' }
+            ],
+            'spreadsheet': [
+                { name: 'Google Sheets', url: 'https://sheets.google.com', description: 'Cloud-based spreadsheet tool' },
+                { name: 'Airtable', url: 'https://airtable.com', description: 'Modern database and spreadsheet hybrid' },
+                { name: 'Zoho Sheet', url: 'https://sheet.zoho.com', description: 'Online spreadsheet application' }
+            ],
+            'excel': [
+                { name: 'Google Sheets', url: 'https://sheets.google.com', description: 'Cloud-based spreadsheet tool' },
+                { name: 'Airtable', url: 'https://airtable.com', description: 'Modern database and spreadsheet hybrid' },
+                { name: 'Zoho Sheet', url: 'https://sheet.zoho.com', description: 'Online spreadsheet application' }
+            ],
+            'notes': [
+                { name: 'Notion', url: 'https://www.notion.so', description: 'All-in-one workspace for business' },
+                { name: 'Evernote Web', url: 'https://www.evernote.com', description: 'Online note-taking platform' },
+                { name: 'OneNote Web', url: 'https://www.onenote.com', description: 'Microsoft\'s online note-taking app' }
+            ],
+            'todo': [
+                { name: 'Todoist', url: 'https://todoist.com', description: 'Online task management tool' },
+                { name: 'Asana', url: 'https://asana.com', description: 'Professional project management tool' },
+                { name: 'Trello', url: 'https://trello.com', description: 'Visual project management platform' }
+            ],
+            'task': [
+                { name: 'Todoist', url: 'https://todoist.com', description: 'Online task management tool' },
+                { name: 'Asana', url: 'https://asana.com', description: 'Professional project management tool' },
+                { name: 'Trello', url: 'https://trello.com', description: 'Visual project management platform' }
+            ],
+            'image': [
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design platform' },
+                { name: 'Figma', url: 'https://www.figma.com', description: 'Online design and prototyping tool' },
+                { name: 'Photopea', url: 'https://www.photopea.com', description: 'Online image editor' }
+            ],
+            'photo': [
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design platform' },
+                { name: 'Figma', url: 'https://www.figma.com', description: 'Online design and prototyping tool' },
+                { name: 'Photopea', url: 'https://www.photopea.com', description: 'Online image editor' }
+            ],
+            'video': [
+                { name: 'Clipchamp', url: 'https://clipchamp.com', description: 'Online video editor' },
+                { name: 'Kapwing', url: 'https://www.kapwing.com', description: 'Online video creation platform' },
+                { name: 'WeVideo', url: 'https://www.wevideo.com', description: 'Cloud-based video editor' }
+            ],
+            'meeting': [
+                { name: 'Google Meet', url: 'https://meet.google.com', description: 'Cloud-based video conferencing tool' },
+                { name: 'Zoom Web', url: 'https://zoom.us', description: 'Online video conferencing platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'call': [
+                { name: 'Google Meet', url: 'https://meet.google.com', description: 'Cloud-based video conferencing tool' },
+                { name: 'Zoom Web', url: 'https://zoom.us', description: 'Online video conferencing platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'email': [
+                { name: 'Gmail', url: 'https://mail.google.com', description: 'Google\'s email service' },
+                { name: 'Outlook Web', url: 'https://outlook.live.com', description: 'Microsoft\'s online email service' },
+                { name: 'Yahoo Mail', url: 'https://mail.yahoo.com', description: 'Yahoo\'s email service' }
+            ],
+            'chat': [
+                { name: 'Slack Web', url: 'https://slack.com', description: 'Online team communication platform' },
+                { name: 'Discord', url: 'https://discord.com', description: 'Online chat and voice platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'ping': [
+                { name: 'Slack Web', url: 'https://slack.com', description: 'Online team communication platform' },
+                { name: 'Discord', url: 'https://discord.com', description: 'Online chat and voice platform' }
+            ],
+            'document': [
+                { name: 'Google Docs', url: 'https://docs.google.com', description: 'Cloud-based document editor' },
+                { name: 'Microsoft Word Online', url: 'https://www.office.com/launch/word', description: 'Online word processor' },
+                { name: 'Zoho Writer', url: 'https://writer.zoho.com', description: 'Online word processor' }
+            ],
+            'doc': [
+                { name: 'Google Docs', url: 'https://docs.google.com', description: 'Cloud-based document editor' },
+                { name: 'Microsoft Word Online', url: 'https://www.office.com/launch/word', description: 'Online word processor' },
+                { name: 'Zoho Writer', url: 'https://writer.zoho.com', description: 'Online word processor' }
+            ],
+            'write': [
+                { name: 'Google Docs', url: 'https://docs.google.com', description: 'Cloud-based document editor' },
+                { name: 'Microsoft Word Online', url: 'https://www.office.com/launch/word', description: 'Online word processor' },
+                { name: 'Zoho Writer', url: 'https://writer.zoho.com', description: 'Online word processor' }
+            ],
+            'draft': [
+                { name: 'Google Docs', url: 'https://docs.google.com', description: 'Cloud-based document editor' },
+                { name: 'Microsoft Word Online', url: 'https://www.office.com/launch/word', description: 'Online word processor' },
+                { name: 'Zoho Writer', url: 'https://writer.zoho.com', description: 'Online word processor' }
+            ],
+            'edit': [
+                { name: 'Google Docs', url: 'https://docs.google.com', description: 'Cloud-based document editor' },
+                { name: 'Microsoft Word Online', url: 'https://www.office.com/launch/word', description: 'Online word processor' },
+                { name: 'Zoho Writer', url: 'https://writer.zoho.com', description: 'Online word processor' }
+            ],
+            'review': [
+                { name: 'Google Docs', url: 'https://docs.google.com', description: 'Cloud-based document editor' },
+                { name: 'Microsoft Word Online', url: 'https://www.office.com/launch/word', description: 'Online word processor' },
+                { name: 'Zoho Writer', url: 'https://writer.zoho.com', description: 'Online word processor' }
+            ],
+            'project': [
+                { name: 'Monday.com', url: 'https://monday.com', description: 'Visual project management platform' },
+                { name: 'Jira', url: 'https://www.atlassian.com/software/jira', description: 'Agile project management tool' },
+                { name: 'ClickUp', url: 'https://clickup.com', description: 'All-in-one project management platform' }
+            ],
+            'plan': [
+                { name: 'Monday.com', url: 'https://monday.com', description: 'Visual project management platform' },
+                { name: 'Jira', url: 'https://www.atlassian.com/software/jira', description: 'Agile project management tool' },
+                { name: 'ClickUp', url: 'https://clickup.com', description: 'All-in-one project management platform' }
+            ],
+            'timeline': [
+                { name: 'Monday.com', url: 'https://monday.com', description: 'Visual project management platform' },
+                { name: 'Jira', url: 'https://www.atlassian.com/software/jira', description: 'Agile project management tool' },
+                { name: 'ClickUp', url: 'https://clickup.com', description: 'All-in-one project management platform' }
+            ],
+            'milestone': [
+                { name: 'Monday.com', url: 'https://monday.com', description: 'Visual project management platform' },
+                { name: 'Jira', url: 'https://www.atlassian.com/software/jira', description: 'Agile project management tool' },
+                { name: 'ClickUp', url: 'https://clickup.com', description: 'All-in-one project management platform' }
+            ],
+            'deadline': [
+                { name: 'Monday.com', url: 'https://monday.com', description: 'Visual project management platform' },
+                { name: 'Jira', url: 'https://www.atlassian.com/software/jira', description: 'Agile project management tool' },
+                { name: 'ClickUp', url: 'https://clickup.com', description: 'All-in-one project management platform' }
+            ],
+            'track': [
+                { name: 'Monday.com', url: 'https://monday.com', description: 'Visual project management platform' },
+                { name: 'Jira', url: 'https://www.atlassian.com/software/jira', description: 'Agile project management tool' },
+                { name: 'ClickUp', url: 'https://clickup.com', description: 'All-in-one project management platform' }
+            ],
+            'message': [
+                { name: 'Slack Web', url: 'https://slack.com', description: 'Online team communication platform' },
+                { name: 'Discord', url: 'https://discord.com', description: 'Online chat and voice platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'collaborate': [
+                { name: 'Slack Web', url: 'https://slack.com', description: 'Online team communication platform' },
+                { name: 'Discord', url: 'https://discord.com', description: 'Online chat and voice platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'discuss': [
+                { name: 'Slack Web', url: 'https://slack.com', description: 'Online team communication platform' },
+                { name: 'Discord', url: 'https://discord.com', description: 'Online chat and voice platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'share': [
+                { name: 'Google Drive', url: 'https://drive.google.com', description: 'Cloud storage and collaboration' },
+                { name: 'Dropbox', url: 'https://www.dropbox.com', description: 'Cloud storage and file sharing' },
+                { name: 'OneDrive', url: 'https://onedrive.live.com', description: 'Microsoft cloud storage' }
+            ],
+            'team': [
+                { name: 'Slack Web', url: 'https://slack.com', description: 'Online team communication platform' },
+                { name: 'Discord', url: 'https://discord.com', description: 'Online chat and voice platform' },
+                { name: 'Microsoft Teams Web', url: 'https://teams.microsoft.com', description: 'Online team collaboration platform' }
+            ],
+            'store': [
+                { name: 'Google Drive', url: 'https://drive.google.com', description: 'Cloud storage and collaboration' },
+                { name: 'Dropbox', url: 'https://www.dropbox.com', description: 'Cloud storage and file sharing' },
+                { name: 'OneDrive', url: 'https://onedrive.live.com', description: 'Microsoft cloud storage' }
+            ],
+            'upload': [
+                { name: 'Google Drive', url: 'https://drive.google.com', description: 'Cloud storage and collaboration' },
+                { name: 'Dropbox', url: 'https://www.dropbox.com', description: 'Cloud storage and file sharing' },
+                { name: 'OneDrive', url: 'https://onedrive.live.com', description: 'Microsoft cloud storage' }
+            ],
+            'backup': [
+                { name: 'Google Drive', url: 'https://drive.google.com', description: 'Cloud storage and collaboration' },
+                { name: 'Dropbox', url: 'https://www.dropbox.com', description: 'Cloud storage and file sharing' },
+                { name: 'OneDrive', url: 'https://onedrive.live.com', description: 'Microsoft cloud storage' }
+            ],
+            'sync': [
+                { name: 'Google Drive', url: 'https://drive.google.com', description: 'Cloud storage and collaboration' },
+                { name: 'Dropbox', url: 'https://www.dropbox.com', description: 'Cloud storage and file sharing' },
+                { name: 'OneDrive', url: 'https://onedrive.live.com', description: 'Microsoft cloud storage' }
+            ],
+            'design': [
+                { name: 'Figma', url: 'https://www.figma.com', description: 'Online design and prototyping tool' },
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design platform' },
+                { name: 'Adobe XD Web', url: 'https://xd.adobe.com', description: 'Online UI/UX design tool' }
+            ],
+            'mockup': [
+                { name: 'Figma', url: 'https://www.figma.com', description: 'Online design and prototyping tool' },
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design platform' },
+                { name: 'Adobe XD Web', url: 'https://xd.adobe.com', description: 'Online UI/UX design tool' }
+            ],
+            'prototype': [
+                { name: 'Figma', url: 'https://www.figma.com', description: 'Online design and prototyping tool' },
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design platform' },
+                { name: 'Adobe XD Web', url: 'https://xd.adobe.com', description: 'Online UI/UX design tool' }
+            ],
+            'wireframe': [
+                { name: 'Figma', url: 'https://www.figma.com', description: 'Online design and prototyping tool' },
+                { name: 'Canva', url: 'https://www.canva.com', description: 'Online design platform' },
+                { name: 'Adobe XD Web', url: 'https://xd.adobe.com', description: 'Online UI/UX design tool' }
+            ],
+            'code': [
+                { name: 'GitHub Codespaces', url: 'https://github.com/features/codespaces', description: 'Online development environment' },
+                { name: 'Replit', url: 'https://replit.com', description: 'Online coding platform' },
+                { name: 'CodeSandbox', url: 'https://codesandbox.io', description: 'Online code editor' }
+            ],
+            'develop': [
+                { name: 'GitHub Codespaces', url: 'https://github.com/features/codespaces', description: 'Online development environment' },
+                { name: 'Replit', url: 'https://replit.com', description: 'Online coding platform' },
+                { name: 'CodeSandbox', url: 'https://codesandbox.io', description: 'Online code editor' }
+            ],
+            'program': [
+                { name: 'GitHub Codespaces', url: 'https://github.com/features/codespaces', description: 'Online development environment' },
+                { name: 'Replit', url: 'https://replit.com', description: 'Online coding platform' },
+                { name: 'CodeSandbox', url: 'https://codesandbox.io', description: 'Online code editor' }
+            ],
+            'debug': [
+                { name: 'GitHub Codespaces', url: 'https://github.com/features/codespaces', description: 'Online development environment' },
+                { name: 'Replit', url: 'https://replit.com', description: 'Online coding platform' },
+                { name: 'CodeSandbox', url: 'https://codesandbox.io', description: 'Online code editor' }
+            ],
+            'analyze': [
+                { name: 'Google Data Studio', url: 'https://datastudio.google.com', description: 'Online data visualization tool' },
+                { name: 'Tableau Public', url: 'https://public.tableau.com', description: 'Online data visualization platform' },
+                { name: 'Power BI Web', url: 'https://app.powerbi.com', description: 'Online business analytics tool' }
+            ],
+            'report': [
+                { name: 'Google Data Studio', url: 'https://datastudio.google.com', description: 'Online data visualization tool' },
+                { name: 'Tableau Public', url: 'https://public.tableau.com', description: 'Online data visualization platform' },
+                { name: 'Power BI Web', url: 'https://app.powerbi.com', description: 'Online business analytics tool' }
+            ],
+            'dashboard': [
+                { name: 'Google Data Studio', url: 'https://datastudio.google.com', description: 'Online data visualization tool' },
+                { name: 'Tableau Public', url: 'https://public.tableau.com', description: 'Online data visualization platform' },
+                { name: 'Power BI Web', url: 'https://app.powerbi.com', description: 'Online business analytics tool' }
+            ],
+            'metrics': [
+                { name: 'Google Data Studio', url: 'https://datastudio.google.com', description: 'Online data visualization tool' },
+                { name: 'Tableau Public', url: 'https://public.tableau.com', description: 'Online data visualization platform' },
+                { name: 'Power BI Web', url: 'https://app.powerbi.com', description: 'Online business analytics tool' }
+            ],
+            'database': [
+                { name: 'Supabase', url: 'https://supabase.com', description: 'Open source Firebase alternative' },
+                { name: 'Firebase', url: 'https://firebase.google.com', description: 'Google\'s mobile and web platform' },
+                { name: 'MongoDB Atlas', url: 'https://www.mongodb.com/cloud/atlas', description: 'Cloud database service' }
+            ],
+            'query': [
+                { name: 'Supabase', url: 'https://supabase.com', description: 'Open source Firebase alternative' },
+                { name: 'Firebase', url: 'https://firebase.google.com', description: 'Google\'s mobile and web platform' },
+                { name: 'MongoDB Atlas', url: 'https://www.mongodb.com/cloud/atlas', description: 'Cloud database service' },
+                { name: 'MySQL', url: 'https://www.mysql.com', description: 'Open source relational database' },
+                { name: 'PostgreSQL', url: 'https://www.postgresql.org', description: 'Open source relational database' },
+                { name: 'DBeaver', url: 'https://dbeaver.io', description: 'Universal database tool' }
+            ],
+            'data': [
+                { name: 'Supabase', url: 'https://supabase.com', description: 'Open source Firebase alternative' },
+                { name: 'Firebase', url: 'https://firebase.google.com', description: 'Google\'s mobile and web platform' },
+                { name: 'MongoDB Atlas', url: 'https://www.mongodb.com/cloud/atlas', description: 'Cloud database service' },
+            ],
+            'sql': [
+                { name: 'Supabase', url: 'https://supabase.com', description: 'Open source Firebase alternative' },
+                { name: 'Firebase', url: 'https://firebase.google.com', description: 'Google\'s mobile and web platform' },
+                { name: 'MongoDB Atlas', url: 'https://www.mongodb.com/cloud/atlas', description: 'Cloud database service' },
+                { name: 'MySQL', url: 'https://www.mysql.com', description: 'Open source relational database' },
+                { name: 'PostgreSQL', url: 'https://www.postgresql.org', description: 'Open source relational database' },
+                { name: 'DBeaver', url: 'https://dbeaver.io', description: 'Universal database tool' }
+            ]
+        };
+
+        function findMatchingApps(taskText) {
+            const taskLower = taskText.toLowerCase();
+            const matches = [];
+            
+            // Check each app in the registry
+            for (const [appName, appInfo] of Object.entries(appRegistry)) {
+                if (appInfo.variations.some(variation => {
+                    // Create a regex pattern that matches the variation as a complete word
+                    const pattern = new RegExp(`\\b${variation}\\b`, 'i');
+                    return pattern.test(taskLower);
+                })) {
+                    matches.push({
+                        name: appName,
+                        app_name: appInfo.app_name,
+                        description: appInfo.description,
+                        category: appInfo.category
+                    });
+                }
+            }
+            
+            return matches;
+        }
+
+        function showDatePicker(element) {
+            // Remove any existing date pickers
+            const existingPicker = document.querySelector('.date-picker');
+            if (existingPicker) {
+                existingPicker.remove();
+            }
+
+            // Create date picker
+            const picker = document.createElement('div');
+            picker.className = 'date-picker';
+            
+            // Get the current due date if it exists
+            const currentDate = element.dataset.dueDate || new Date().toISOString().split('T')[0];
+            
+            // Store the todo item reference
+            const todoItem = element.closest('.todo-item');
+            const todoId = todoItem.querySelector('input[type="checkbox"]').getAttribute('onchange').match(/\d+/)[0];
+            picker.dataset.todoId = todoId;
+            
+            picker.innerHTML = `
+                <input type="date" min="${new Date().toISOString().split('T')[0]}" value="${currentDate}">
+                <button onclick="setDueDate(this, '${todoId}')">Set</button>
+                <button class="clear" onclick="clearDueDate(this, '${todoId}')">Clear</button>
+            `;
+
+            // Position the picker
+            const rect = element.getBoundingClientRect();
+            const scrollY = window.scrollY || window.pageYOffset;
+            const scrollX = window.scrollX || window.pageXOffset;
+            
+            picker.style.position = 'fixed';
+            picker.style.top = `${rect.bottom + scrollY + 5}px`;
+            picker.style.left = `${rect.left + scrollX}px`;
+
+            // Add to document
+            document.body.appendChild(picker);
+
+            // Focus the date input
+            picker.querySelector('input[type="date"]').focus();
+
+            // Close picker when clicking outside
+            const closePicker = (e) => {
+                if (!picker.contains(e.target) && e.target !== element) {
+                    picker.remove();
+                }
+            };
+            
+            // Use setTimeout to ensure the click event doesn't fire immediately
+            setTimeout(() => {
+                document.addEventListener('click', closePicker);
+            }, 0);
+        }
+
+        function showSuggestions(taskText) {
+            const taskLower = taskText.toLowerCase();
+            const modal = document.getElementById('suggestionModal');
+            const suggestionList = document.getElementById('suggestionList');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            // Clear previous suggestions
+            suggestionList.innerHTML = '';
+            
+            // Find matching apps
+            const matchingApps = findMatchingApps(taskText);
+            
+            // Find matching categories
+            const matchingCategories = [];
+            const keywords = Object.keys(suggestions).sort((a, b) => b.length - a.length);
+            const matchedKeywords = new Set();
+            
+            for (const keyword of keywords) {
+                if (taskLower.includes(keyword)) {
+                    // Check if this word is part of any longer matched word
+                    const isPartOfLongerWord = Array.from(matchedKeywords).some(matched => 
+                        matched.length > keyword.length && matched.includes(keyword)
+                    );
+                    if (!isPartOfLongerWord) {
+                        matchedKeywords.add(keyword);
+                        matchingCategories.push({ keyword, items: suggestions[keyword] });
+                    }
+                }
+            }
+
+            // Set current suggestion category
+            if (matchingApps.length === 1) {
+                currentSuggestionCategory = matchingApps[0].category;
+            } else if (matchingCategories.length === 1) {
+                currentSuggestionCategory = matchingCategories[0].keyword;
+            } else {
+                currentSuggestionCategory = 'general';
+            }
+
+            if (matchingApps.length > 0 || matchingCategories.length > 0) {
+                // Update modal title
+                if (matchingApps.length === 1 && matchingCategories.length === 0) {
+                    modalTitle.textContent = `Suggestions for ${matchingApps[0].name}`;
+                } else if (matchingApps.length === 0 && matchingCategories.length === 1) {
+                    modalTitle.textContent = `Suggestions for ${matchingCategories[0].keyword}`;
+                } else {
+                    modalTitle.textContent = 'Suggestions';
+                }
+
+                // Add matching apps
+                if (matchingApps.length > 0) {
+                    const appsDiv = document.createElement('div');
+                    appsDiv.className = 'suggestion-category';
+                    
+                    const appsTitle = document.createElement('h3');
+                    appsTitle.textContent = 'Matching Applications';
+                    appsDiv.appendChild(appsTitle);
+
+                    matchingApps.forEach(app => {
+                        const li = document.createElement('div');
+                        li.className = 'suggestion-item';
+                        li.innerHTML = `
+                            <a href="#" onclick="launchApp('${app.app_name}', event)">${app.name}</a>
+                            <p>${app.description}</p>
+                        `;
+                        appsDiv.appendChild(li);
+                    });
+
+                    suggestionList.appendChild(appsDiv);
+                }
+
+                // Add matching categories
+                matchingCategories.forEach(({ keyword, items }) => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'suggestion-category';
+                    
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.textContent = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+                    categoryDiv.appendChild(categoryTitle);
+
+                    items.forEach(item => {
+                        const li = document.createElement('div');
+                        li.className = 'suggestion-item';
+                        
+                        if (item.app_name) {
+                            li.innerHTML = `
+                                <a href="#" onclick="launchApp('${item.app_name}', event)">${item.name}</a>
+                                <p>${item.description}</p>
+                            `;
+                        } else {
+                            li.innerHTML = `
+                                <a href="${item.url}" target="_blank">${item.name}</a>
+                                <p>${item.description}</p>
+                            `;
+                        }
+                        
+                        categoryDiv.appendChild(li);
+                    });
+
+                    suggestionList.appendChild(categoryDiv);
+                });
+
+                modal.style.display = 'block';
+            }
+        }
+
+        async function launchApp(appName, event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/launch-app', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ app_name: appName })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Close the modal and redirect to the web URL
+                    document.getElementById('suggestionModal').style.display = 'none';
+                    window.open(data.web_url, '_blank');
+                } else {
+                    // Show error message
+                    const modal = document.getElementById('suggestionModal');
+                    const suggestionList = document.getElementById('suggestionList');
+                    const modalTitle = document.getElementById('modalTitle');
+                    
+                    modalTitle.textContent = 'Error';
+                    suggestionList.innerHTML = `
+                        <div class="suggestion-category">
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error launching app:', error);
+                alert('An error occurred while trying to launch the application.');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('suggestionModal').style.display = 'none';
+        }
+
+        function updateTriggerWords() {
+            // Update Applications section
+            const appTriggerWords = document.getElementById('appTriggerWords');
+            appTriggerWords.innerHTML = '';
+            
+            // Get all variations from appRegistry
+            const allVariations = new Set();
+            Object.values(appRegistry).forEach(app => {
+                app.variations.forEach(variation => allVariations.add(variation));
+            });
+            
+            // Sort and display variations
+            Array.from(allVariations).sort().forEach(variation => {
+                const span = document.createElement('span');
+                span.className = 'trigger-word';
+                span.textContent = variation;
+                appTriggerWords.appendChild(span);
+            });
+
+            // Update Categories section
+            const categoryTriggerWords = document.getElementById('categoryTriggerWords');
+            categoryTriggerWords.innerHTML = '';
+
+            // Get all keywords from suggestions
+            const allKeywords = new Set(Object.keys(suggestions));
+            
+            // Create a single category section for all trigger words
+            const li = document.createElement('li');
+            li.className = 'trigger-category';
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = 'Trigger Words';
+            li.appendChild(h3);
+
+            const triggerWords = document.createElement('div');
+            triggerWords.className = 'trigger-words';
+            
+            Array.from(allKeywords).sort().forEach(keyword => {
+                const span = document.createElement('span');
+                span.className = 'trigger-word';
+                span.textContent = keyword;
+                triggerWords.appendChild(span);
+            });
+
+            li.appendChild(triggerWords);
+            categoryTriggerWords.appendChild(li);
+        }
+
+        function showInfoModal() {
+            updateTriggerWords(); // Update trigger words before showing modal
+            document.getElementById('infoModal').style.display = 'block';
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+
+        // Update window.onclick to handle both modals
+        window.onclick = function(event) {
+            const suggestionModal = document.getElementById('suggestionModal');
+            const infoModal = document.getElementById('infoModal');
+            const taskInfoModal = document.getElementById('taskInfoModal');
+            const tagsModal = document.getElementById('tagsModal');
+            
+            if (event.target === suggestionModal) {
+                suggestionModal.style.display = 'none';
+            }
+            if (event.target === infoModal) {
+                infoModal.style.display = 'none';
+            }
+            if (event.target === taskInfoModal) {
+                taskInfoModal.style.display = 'none';
+            }
+            if (event.target === tagsModal) {
+                tagsModal.style.display = 'none';
+            }
+        }
+
+        // Create a function to trigger confetti
+        function triggerConfetti() {
+            // Fire multiple confetti bursts
+            const duration = 2000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+
+                // Fire confetti from multiple angles
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                });
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                });
+            }, 250);
+        }
+
+        let selectedTodoId = null;
+
+        function showTaskToolbar(todoId) {
+            selectedTodoId = todoId;
+            const toolbar = document.getElementById('taskToolbar');
+            toolbar.classList.add('active');
+        }
+
+        function hideTaskToolbar() {
+            const toolbar = document.getElementById('taskToolbar');
+            toolbar.classList.remove('active');
+            selectedTodoId = null;
+        }
+
+        // Close toolbar when clicking outside
+        document.addEventListener('click', function(event) {
+            const toolbar = document.getElementById('taskToolbar');
+            const moreOptionsBtn = event.target.closest('.more-options-btn');
+            
+            if (!toolbar.contains(event.target) && !moreOptionsBtn && toolbar.classList.contains('active')) {
+                hideTaskToolbar();
+            }
+        });
+
+        // Update the todo item template to remove tags
+        function createTodoItem(todo) {
+            const li = document.createElement('li');
+            li.className = 'todo-item';
+            if (todo.completed) li.classList.add('completed');
+            
+            const hasSuggestions = findMatchingApps(todo.text).length > 0 || 
+                Object.keys(suggestions).some(keyword => todo.text.toLowerCase().includes(keyword));
+            
+            li.innerHTML = `
+                <input type="checkbox" onchange="toggleTask(this, ${todo.id})" ${todo.completed ? 'checked' : ''}>
+                <div class="todo-content">
+                    <span class="todo-text">${todo.text}</span>
+                    ${hasSuggestions ? `<button class="suggestion-btn" onclick="showSuggestions('${todo.text.toLowerCase()}')" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)"><i class="fas fa-bolt"></i><span class="tooltip">Get suggestions</span></button>` : ''}
+                    <div class="due-date" onclick="showDatePicker(this, ${todo.id})" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+                        <i class="fas fa-calendar"></i>
+                        <span class="tooltip">Set due date</span>
+                    </div>
+                    <button class="more-options-btn" onclick="showTaskToolbar(${todo.id})" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <span class="tooltip">More options</span>
+                    </button>
+                </div>
+            `;
+            
+            return li;
+        }
+
+        function showTaskInfo() {
+            const modal = document.getElementById('taskInfoModal');
+            const content = document.getElementById('taskInfoContent');
+            
+            // Get the selected todo
+            if (isAuthenticated) {
+                // Fetch todo from server
+                fetch(`/api/todos/${selectedTodoId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch todo');
+                        }
+                        return response.json();
+                    })
+                    .then(todo => {
+                        displayTaskInfo(todo);
+                        modal.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching todo:', error);
+                        content.innerHTML = '<p class="error">Failed to load task information. Please try again.</p>';
+                        modal.style.display = 'block';
+                    });
+            } else {
+                // Get todo from localStorage
+                const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const todo = todos.find(t => t.id === selectedTodoId);
+                if (todo) {
+                    displayTaskInfo(todo);
+                    modal.style.display = 'block';
+                } else {
+                    content.innerHTML = '<p class="error">Task not found.</p>';
+                    modal.style.display = 'block';
+                }
+            }
+        }
+
+        function displayTaskInfo(todo) {
+            const content = document.getElementById('taskInfoContent');
+            
+            // Format dates to show only the date part
+            const createdDate = new Date(todo.created_at).toLocaleDateString();
+            const dueDate = todo.due_date ? new Date(todo.due_date).toLocaleDateString() : 'Not set';
+            const completedDate = todo.completed_at ? new Date(todo.completed_at).toLocaleDateString() : 'Not completed';
+            
+            // Create info HTML
+            content.innerHTML = `
+                <div class="task-info">
+                    <p><strong>Task:</strong> ${todo.text}</p>
+                    <p><strong>Status:</strong> ${todo.completed ? 'Completed' : 'Active'}</p>
+                    <p><strong>Created:</strong> ${createdDate}</p>
+                    <p><strong>Due Date:</strong> ${dueDate}</p>
+                    <p><strong>Completed:</strong> ${completedDate}</p>
+                </div>
+            `;
+        }
+
+        function closeTaskInfoModal() {
+            document.getElementById('taskInfoModal').style.display = 'none';
+        }
+
+        function manageTags(button) {
+            const modal = document.getElementById('tagsModal');
+            modal.style.display = 'block';
+        }
+
+        function closeTagsModal() {
+            document.getElementById('tagsModal').style.display = 'none';
+        }
+
+        // Add delete task functionality
+        async function deleteTask() {
+            if (!selectedTodoId) return;
+
+            if (isAuthenticated) {
+                try {
+                    const response = await fetch(`/api/todos/${selectedTodoId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        throw new Error('Failed to delete todo');
+                    }
+
+                    // Remove the todo item from the UI
+                    const todoItem = document.querySelector(`.todo-item input[type="checkbox"][onchange*="${selectedTodoId}"]`).parentElement;
+                    if (todoItem) {
+                        todoItem.remove();
+                    }
+                    
+                    // Hide toolbar
+                    hideTaskToolbar();
+                } catch (error) {
+                    console.error('Error deleting todo:', error);
+                    alert('Failed to delete task. Please try again.');
+                }
+            } else {
+                // Delete from localStorage
+                const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const updatedTodos = todos.filter(todo => todo.id !== selectedTodoId);
+                localStorage.setItem('todos', JSON.stringify(updatedTodos));
+                
+                // Hide toolbar and reload todos
+                hideTaskToolbar();
+                loadTodos();
+            }
+        }
+
+        // Tooltip JS
+        function showTooltip(el) {
+            const tooltip = el.querySelector('.tooltip');
+            if (!tooltip) return;
+            tooltip.classList.add('show');
+            // Position tooltip above or below based on space
+            const parentRect = el.offsetParent ? el.offsetParent.getBoundingClientRect() : {left:0,top:0};
+            const rect = el.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const padding = 8;
+            const offset = 4;
+            let top = -tipRect.height - offset;
+            let left = (rect.width - tipRect.width) / 2;
+            let position = 'top';
+
+            // If not enough space above, show below
+            if (rect.top < tipRect.height + padding + offset) {
+                top = rect.height + offset;
+                position = 'bottom';
+            }
+            // If not enough space below, show above
+            if (position === 'bottom' && (rect.bottom + tipRect.height + padding > window.innerHeight)) {
+                top = -tipRect.height - offset;
+                position = 'top';
+            }
+            // If not enough space left, align to left edge
+            if (rect.left + left < 0) {
+                left = padding;
+            }
+            // If not enough space right, align to right edge
+            if (rect.left + left + tipRect.width > window.innerWidth) {
+                left = rect.width - tipRect.width - padding;
+            }
+            // Use offset for relative parent
+            tooltip.style.top = `${top}px`;
+            tooltip.style.left = `${left}px`;
+        }
+        function hideTooltip(el) {
+            const tooltip = el.querySelector('.tooltip');
+            if (!tooltip) return;
+            tooltip.classList.remove('show');
+        }
+
+        // Add function to handle suggestion submission
+        async function submitSuggestion() {
+            const name = document.getElementById('suggestionName').value.trim();
+
+            if (!name) {
+                alert('Please enter a tool name.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name,
+                        category: currentSuggestionCategory || 'general'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit suggestion');
+                }
+
+                // Clear form
+                document.getElementById('suggestionName').value = '';
+
+                // Show success message
+                alert('Thank you for your suggestion! We\'ll review it and add it to our recommendations.');
+            } catch (error) {
+                console.error('Error submitting suggestion:', error);
+                alert('Failed to submit suggestion. Please try again.');
+            }
+        }
+
+        // Add variable to track current suggestion category
+        let currentSuggestionCategory = null;
+    </script>
+</body>
+    <a href="{{ url_for('feedback') }}" class="feedback-button" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)" onfocus="showTooltip(this)" onblur="hideTooltip(this)">
+        <i class="fas fa-comments"></i>
+        <span class="tooltip">Go to Feedback</span>
+    </a>
+</body>
+</html>

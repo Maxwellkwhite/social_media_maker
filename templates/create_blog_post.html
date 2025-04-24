@@ -1,0 +1,30 @@
+{% include "header.html" %}
+{% block content %}
+<div class="container mt-3">
+    <a href="{{ url_for('blog') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Blog
+    </a>
+</div>
+
+<div class="blog-post-form">
+    <h1>Create New Blog Post</h1>
+    <form method="POST" novalidate>
+        {{ form.csrf_token }}
+        <div class="mb-3">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.subtitle.label(class="form-label") }}
+            {{ form.subtitle(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.content.label(class="form-label") }}
+            {{ form.content(class="form-control") }}
+            {{ ckeditor.load() }}
+            {{ ckeditor.config(name='content', height=600) }}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %} 

@@ -1,0 +1,206 @@
+{% include "header.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Ticklis Pricing</title>
+    <meta name="description" content="Explore Ticklis' pricing options for AI-generated quizzes. Choose the plan that best suits your needs.">
+    <meta name="keywords" content="Ticklis, Pricing, Affordable Plans, Quiz Generation">
+</head>
+
+<div class="price_page">
+    <!-- Pricing Section -->
+    <section class="pricing-section py-9">
+        <div class="container">
+            <div class="row justify-content-center mb-6">
+                <div class="col-lg-6 text-center">
+                    <h2 class="display-5 fw-bold mb-4">Choose Your Path to Growth</h2>
+                    <h3 class="lead text-muted">Simple, transparent pricing options to help you grow your practice</h3>
+                    
+                    <!-- Pricing Toggle -->
+                    <div class="pricing-toggle mb-4">
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <span class="fw-medium">Monthly</span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" id="pricingToggle" checked>
+                            </div>
+                            <span class="fw-medium">Annual</span>
+                            <span class="badge bg-primary ms-2">Save Up to 25%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 justify-content-center">                    
+                <!-- Free Plan -->
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-5">
+                                <h4 class="fw-bold mb-3">Free</h4>
+                                <div class="pricing-value">
+                                    <span class="display-4 fw-bold" data-annual="$0/month" data-monthly="$0/month">$0/month</span>
+                                    <div class="annual-total text-muted" style="display: none;">
+                                        $0 billed annually
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled mb-5">
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Total PDF Upload Limit: 1</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Monthly Question Limit: 5</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>AI Model: GPT-4</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Maximum PDF Size: 25MB</span>
+                                </li>
+                            </ul>
+                            <div class="text-center">
+                                {% if current_user.is_authenticated %}
+                                    <a href="{{url_for('home_page')}}" class="btn btn-outline-primary btn-lg w-100">Choose Free</a>
+                                {% else %}
+                                    <a href="{{url_for('register')}}" class="btn btn-outline-primary btn-lg w-100">Get Started</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Plan -->
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-5">
+                                <h4 class="fw-bold mb-3">Basic</h4>
+                                <div class="pricing-value">
+                                    <span class="display-4 fw-bold" data-annual="$10/month" data-monthly="$15/month">$10/month</span>
+                                    <div class="annual-total text-muted" style="display: none;">
+                                        $120 billed annually
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled mb-5">
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Total PDF Upload Limit: 100</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Monthly Question Limit: 1000</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>AI Model: GPT-4</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Maximum PDF Size: 25MB</span>
+                                </li>
+                            </ul>
+                            <div class="text-center">
+                                {% if current_user.is_authenticated %}
+                                    <a href="{{url_for('create_checkout_session', plan='ybasic')}}" class="btn btn-outline-primary btn-lg w-100" data-plan-monthly="mbasic" data-plan-annual="ybasic">Choose Basic</a>
+                                {% else %}
+                                    <a href="{{url_for('register')}}" class="btn btn-outline-primary btn-lg w-100">Get Started</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="col-lg-4">
+                    <div class="card h-100 border-2 border-primary shadow hover-lift bg-primary bg-opacity-10">
+                        <div class="ribbon position-absolute end-0 top-0 bg-primary text-white px-4 py-1">Popular</div>
+                        <div class="card-body p-5">
+                            <div class="text-center mb-5">
+                                <h4 class="fw-bold mb-3">Pro</h4>
+                                <div class="pricing-value">
+                                    <span class="display-4 fw-bold" data-annual="$20/month" data-monthly="$25/month">$20/month</span>
+                                    <div class="annual-total text-muted" style="display: none;">
+                                        $240 billed annually
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled mb-5">
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Total PDF Upload Limit: Unlimited</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Monthly Question Limit: Unlimited</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>AI Model: GPT-4</span>
+                                </li>
+                                <li class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-check text-primary me-3"></i>
+                                    <span>Maximum PDF Size: 50MB</span>
+                                </li>
+                            </ul>
+                            <div class="text-center">
+                                {% if current_user.is_authenticated %}
+                                    <a href="{{url_for('create_checkout_session', plan='ypro')}}" class="btn btn-outline-primary btn-lg w-100" data-plan-monthly="mpro" data-plan-annual="ypro">Choose Pro</a>
+                                {% else %}
+                                    <a href="{{url_for('register')}}" class="btn btn-outline-primary btn-lg w-100">Get Started</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+function updatePricing(isAnnual) {
+    const priceElements = document.querySelectorAll('.pricing-value span');
+    const annualTotals = document.querySelectorAll('.annual-total');
+    const planButtons = document.querySelectorAll('[data-plan-monthly]');
+    
+    priceElements.forEach(element => {
+        if (isAnnual) {
+            element.textContent = element.getAttribute('data-annual');
+        } else {
+            element.textContent = element.getAttribute('data-monthly');
+        }
+    });
+
+    annualTotals.forEach(element => {
+        element.style.display = isAnnual ? 'block' : 'none';
+    });
+
+    // Update plan URLs
+    planButtons.forEach(button => {
+        const planType = isAnnual ? button.getAttribute('data-plan-annual') : button.getAttribute('data-plan-monthly');
+        button.href = "{{url_for('create_checkout_session', plan='')}}" + planType;
+    });
+}
+
+// Add event listener for changes
+document.getElementById('pricingToggle').addEventListener('change', function() {
+    updatePricing(this.checked);
+});
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updatePricing(document.getElementById('pricingToggle').checked);
+});
+</script>
+
+</body>
+</html>
