@@ -6,6 +6,13 @@ import requests
 import tempfile
 from urllib.parse import quote
 
+# Add music file paths
+MUSIC_CHOICES = {
+    '1': 'background_music/chill.mp3',
+    '2': 'background_music/suspense.mp3',
+    '3': 'background_music/upbeat.mp3'
+}
+
 def download_image(url, label):
     """Download image from URL and save it temporarily"""
     try:
@@ -29,7 +36,7 @@ def get_unsplash_image(query):
     """Fetch a random image from Unsplash based on the query"""
     try:
         # Replace this with your Unsplash API access key
-        access_key = 'YOUR_UNSPLASH_ACCESS_KEY_HERE'
+        access_key = 'w3puTZ-pDkfeZ_rE67yEEE-q5xPBsz_wtqxIJyEMROo'
         
         # Search for images with landscape orientation
         url = f'https://api.unsplash.com/photos/random?query={quote(query)}&orientation=landscape'
@@ -104,7 +111,7 @@ def create_text_clip(text, size=(1080, 700), duration=5, fontsize=90):
         total_height = len(lines) * (fontsize + 10)
     
     # Draw each line
-    y = (size[1] - total_height) // 2 + 100  # Center vertically and move down 100px (reduced from 200px)
+    y = (size[1] - total_height) // 2 + 250  # Center vertically and move down 50px (reduced from 100px)
     for line in lines:
         # Calculate text position to center it horizontally
         text_bbox = draw.textbbox((0, 0), line, font=font)
@@ -125,7 +132,7 @@ def create_image_grid(image_paths, labels, size=(1080, 1620), duration=5):
     
     # Calculate dimensions for each image with adjusted spacing
     # Start much higher in the frame
-    available_height = size[1] - 400  # Reduced from full height to start higher
+    available_height = size[1] - 300  # Reduced from 400 to start higher
     available_width = size[0] - 150   # 50px left + 50px right + 50px between images
     
     # Set 4:3 aspect ratio dimensions for more vertical-friendly images
@@ -138,10 +145,10 @@ def create_image_grid(image_paths, labels, size=(1080, 1620), duration=5):
     
     # Positions for the four images with adjusted spacing
     positions = [
-        (50, 50 + vertical_spacing),                    # Top left
-        (img_width + 100, 50 + vertical_spacing),       # Top right
-        (50, 50 + img_height + 2 * vertical_spacing),  # Bottom left
-        (img_width + 100, 50 + img_height + 2 * vertical_spacing)  # Bottom right
+        (50, 25 + vertical_spacing),                    # Top left (moved up from 50)
+        (img_width + 100, 25 + vertical_spacing),       # Top right (moved up from 50)
+        (50, 25 + img_height + 2 * vertical_spacing),  # Bottom left (moved up from 50)
+        (img_width + 100, 25 + img_height + 2 * vertical_spacing)  # Bottom right (moved up from 50)
     ]
     
     # Load and paste each image
@@ -161,7 +168,7 @@ def create_image_grid(image_paths, labels, size=(1080, 1620), duration=5):
             label_bbox = draw.textbbox((0, 0), label, font=font)
             label_width = label_bbox[2] - label_bbox[0]
             x = pos[0] + (img_width - label_width) // 2
-            y = pos[1] - 50  # Position label 50px above the image
+            y = pos[1] - 60  # Position label 50px above the image
             draw.text((x, y), label, font=font, fill='black')
             
             # Load and resize image
@@ -205,6 +212,38 @@ def create_video(title, labels, output_path="output.mp4"):
     # Combine clips vertically
     final_clip = clips_array([[title_clip], [grid_clip]])
     
+    # Add fade-in effect (0.5 second duration)
+    final_clip = final_clip.fadein(0.5)
+    
+    # Get music choice from user
+    while True:
+        print("\nSelect background music:")
+        print("1. Chill")
+        print("2. Suspense")
+        print("3. Upbeat")
+        choice = input("Enter your choice (1-3): ")
+        
+        if choice in MUSIC_CHOICES:
+            music_path = MUSIC_CHOICES[choice]
+            if os.path.exists(music_path):
+                break
+            else:
+                print(f"Error: Music file {music_path} not found. Please ensure the music files are in the same directory.")
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+    
+    # Add background music
+    audio = AudioFileClip(music_path)
+    
+    # Set audio volume to 30% of original
+    audio = audio.volumex(0.2)
+    
+    # Trim audio to match video duration
+    audio = audio.subclip(0, final_clip.duration)
+    
+    # Set the audio of the video
+    final_clip = final_clip.set_audio(audio)
+    
     # Write the video file
     final_clip.write_videofile(output_path, fps=24)
     
@@ -217,13 +256,13 @@ def create_video(title, labels, output_path="output.mp4"):
 
 # Example usage
 if __name__ == "__main__":
-    title = "Most boring jobs"
+    title = "Most productive tools"
     
     labels = [
-        "Accountant",
-        "Secretary",
-        "Milk Man",
-        "Window Cleaner",
+        "Computer",
+        "Phone",
+        "Tablet",
+        "Smartwatch",
     ]
     
     create_video(title, labels)
