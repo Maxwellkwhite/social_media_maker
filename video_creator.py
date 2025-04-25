@@ -33,13 +33,13 @@ def download_image(url, label):
         return None
 
 def get_unsplash_image(query):
-    """Fetch a random image from Unsplash based on the query"""
+    """Fetch the first relevant image from Unsplash based on the query"""
     try:
         # Replace this with your Unsplash API access key
         access_key = 'w3puTZ-pDkfeZ_rE67yEEE-q5xPBsz_wtqxIJyEMROo'
         
         # Search for images with landscape orientation
-        url = f'https://api.unsplash.com/photos/random?query={quote(query)}&orientation=landscape'
+        url = f'https://api.unsplash.com/search/photos?query={quote(query)}&orientation=landscape&per_page=1'
         headers = {
             'Authorization': f'Client-ID {access_key}',
             'Accept-Version': 'v1'
@@ -49,7 +49,9 @@ def get_unsplash_image(query):
         response.raise_for_status()
         
         data = response.json()
-        return data['urls']['regular']  # Get the regular size image URL
+        if data['results'] and len(data['results']) > 0:
+            return data['results'][0]['urls']['regular']  # Get the regular size image URL of first result
+        return None
     except Exception as e:
         print(f"Error fetching image for {query}: {e}")
         return None
@@ -253,16 +255,24 @@ def create_video(title, labels, output_path="output.mp4"):
             os.unlink(temp_file)
         except:
             pass
+    
+    # Print hashtags and caption for easy copying
+    print("\n\n=== Copy these hashtags ===")
+    print("#fyp #foryou #productivity")
+    print("\n=== Copy this caption ===")
+    print("Use PortableDocs to converse with your PDF. No need to read hours of documents. Let our AI handle it for you :)")
+    print("Search PortableDocs or head to link in bio.")
+    print("\nVideo creation complete! 🎥")
 
 # Example usage
 if __name__ == "__main__":
-    title = "Most productive tools"
+    title = "The hardest working jobs"
     
     labels = [
-        "Computer",
-        "Phone",
-        "Tablet",
-        "Smartwatch",
+        "Construction",
+        "Doctor",
+        "Programmer",
+        "Teacher",
     ]
     
     create_video(title, labels)
