@@ -41,18 +41,30 @@
           <ul class="navbar-nav">
             {% if current_user.is_authenticated %}
             <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('pdf_page') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="{{ url_for('feedback') }}">Feature Requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('blog') }}">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('free_pdf_tools') }}">Free PDF Tools</a>
             </li>
             {% endif %}
             {% if not current_user.is_authenticated %}
             <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('price_page') }}">Pricing</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="{{ url_for('feedback') }}">Feature Requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('blog') }}">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('free_pdf_tools') }}">Free PDF Tools</a>
             </li>
             {% endif %}
           </ul>

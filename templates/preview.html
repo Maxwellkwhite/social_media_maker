@@ -1,0 +1,250 @@
+{% include 'header.html' %}
+
+{% block content %}
+{% if truncation_warning %}
+    <div class="alert alert-warning" role="alert">
+        {{ truncation_warning }}
+    </div>
+{% endif %}
+<div class="container-fluid">
+    <!-- PDF Filename display for mobile -->
+    <div class="d-md-none mb-3">
+        <h5 class="text-muted">{{ filename }}</h5>
+    </div>
+    
+    <div class="row" style="height: 90vh;">
+        <!-- PDF Preview Section - hidden on mobile -->
+        <div class="col-md-6 h-100 d-none d-md-block">
+            <div class="h-100" style="border-right: 1px solid #dee2e6;">
+                <embed src="{{ pdf_url }}" 
+                       type="application/pdf" 
+                       width="100%" 
+                       height="100%">
+            </div>
+        </div>
+        <!-- Chat Interface Section - full width on mobile -->
+        {% if user.premium_level == 1 and user.monthly_questions < 1000 
+            or user.premium_level == 2
+            or user.premium_level == 0 and user.monthly_questions < 5 %}
+        <div class="col-12 col-md-6 h-100">
+            <div class="chat-container h-100 d-flex flex-column">
+                <div class="chat-messages flex-grow-1" style="overflow-y: auto;" id="messageContainer">
+                    <!-- Messages will be added here dynamically -->
+                </div>
+                <div class="chat-input p-3" style="border-top: 1px solid #dee2e6;">
+                    <form id="chatForm" onsubmit="handleSubmit(event)">
+                        <div class="input-group">
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-outline-secondary rounded-circle" 
+                                        style="margin-right: 10px; width: 38px; height: 38px; padding: 6px 0px;"
+                                        id="presetButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="presetButton">
+                                    <li><a class="dropdown-item preset-prompt" href="#" data-prompt="Summarize this document for me in a sentence or two.">Short Summary</a></li>
+                                    <li><a class="dropdown-item preset-prompt" href="#" data-prompt="What are the key points in this document?">Key Points</a></li>
+                                    <li><a class="dropdown-item preset-prompt" href="#" data-prompt="Explain this document in a simple way that anyone can understand.">Simple Explanation</a></li>
+                                </ul>
+                            </div>
+                            <input type="text" class="form-control" id="messageInput" name="message" placeholder="Type your message..." required>
+                            <button class="btn btn-primary" type="submit">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 col-md-6 h-100">
+            <div class="chat-container h-100 d-flex flex-column justify-content-center align-items-center text-center p-4">
+                <div class="alert alert-info mb-4" role="alert">
+                    <h4 class="alert-heading mb-3">You've reached your monthly question limit!</h4>
+                    <p>To continue chatting with your documents, please upgrade to the Pro plan.</p>
+                    <p class="mb-0">Our Pro plan offers unlimited questions and many other great features.</p>
+                </div>
+                <a href="{{ url_for('price_page') }}" class="btn btn-primary btn-lg">
+                    Upgrade Now
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const currentQuestions = {{ user.monthly_questions }};
+const premiumLevel = {{ user.premium_level }};
+let questionCount = currentQuestions;
+
+function checkQuestionLimit() {
+    if (premiumLevel === 2) return true; // Unlimited for premium level 2
+    if (premiumLevel === 1 && questionCount >= 1000) return false;
+    if (premiumLevel === 0 && questionCount >= 5) return false;
+    return true;
+}
+
+function addMessage(content, isUser) {
+    const messageContainer = document.getElementById('messageContainer');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'assistant-message'} p-2 m-2 rounded`;
+    
+    if (isUser) {
+        messageDiv.textContent = content;
+    } else {
+        // Convert markdown-style bold text to HTML
+        const formattedContent = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        messageDiv.innerHTML = formattedContent;
+    }
+    
+    messageContainer.appendChild(messageDiv);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+function showLoadingIndicator() {
+    const messageContainer = document.getElementById('messageContainer');
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loadingIndicator';
+    loadingDiv.className = 'text-center p-2';
+    loadingDiv.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    `;
+    messageContainer.appendChild(loadingDiv);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+function hideLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (loadingIndicator) {
+        loadingIndicator.remove();
+    }
+}
+
+function showLimitReachedMessage() {
+    const messageContainer = document.getElementById('messageContainer');
+    const chatInput = document.querySelector('.chat-input');
+    
+    // Hide the chat input
+    chatInput.style.display = 'none';
+    
+    // Show limit reached message
+    const limitDiv = document.createElement('div');
+    limitDiv.className = 'alert alert-info m-3 text-center';
+    limitDiv.innerHTML = `
+        <h4 class="alert-heading mb-3">You've reached your monthly question limit!</h4>
+        <p>To continue chatting with your documents, please upgrade to the Pro plan.</p>
+        <p class="mb-0">Our Pro plan offers unlimited questions and many other great features.</p>
+        <a href="{{ url_for('price_page') }}" class="btn btn-primary mt-3">Upgrade Now</a>
+    `;
+    messageContainer.appendChild(limitDiv);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+}
+
+function handleSubmit(event) {
+    event.preventDefault();
+    
+    // Check question limit before proceeding
+    if (!checkQuestionLimit()) {
+        showLimitReachedMessage();
+        return;
+    }
+    
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value;
+    
+    addMessage(message, true);
+    showLoadingIndicator();
+    
+    fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            message: message,
+            file_id: '{{ file_id }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingIndicator();
+        
+        if (data.error === 'question_limit_reached') {
+            showLimitReachedMessage();
+        } else if (data.error) {
+            addMessage('Looks like the AI is napping, please come back later and try again 😴', false);
+        } else {
+            addMessage(data.response, false);
+            questionCount++; // Increment question counter after successful response
+            
+            // Check if this question put us at the limit
+            if (!checkQuestionLimit()) {
+                showLimitReachedMessage();
+            }
+        }
+        messageInput.value = '';
+    })
+    .catch(error => {
+        hideLoadingIndicator();
+        console.error('Error:', error);
+        addMessage('Looks like the AI is napping, please come back later and try again 😴', false);
+    });
+}
+
+function sendPresetPrompt(prompt) {
+    // Check question limit before proceeding
+    if (!checkQuestionLimit()) {
+        showLimitReachedMessage();
+        return;
+    }
+    
+    addMessage(prompt, true);
+    showLoadingIndicator();
+    
+    fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            message: prompt,
+            file_id: '{{ file_id }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingIndicator();
+        
+        if (data.error === 'question_limit_reached') {
+            showLimitReachedMessage();
+        } else if (data.error) {
+            addMessage('Looks like the AI is napping, please come back later and try again 😴', false);
+        } else {
+            addMessage(data.response, false);
+            questionCount++; // Increment question counter after successful response
+            
+            // Check if this question put us at the limit
+            if (!checkQuestionLimit()) {
+                showLimitReachedMessage();
+            }
+        }
+    })
+    .catch(error => {
+        hideLoadingIndicator();
+        console.error('Error:', error);
+        addMessage('Looks like the AI is napping, please come back later and try again 😴', false);
+    });
+}
+
+// Update preset prompt handling
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.preset-prompt').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const prompt = this.getAttribute('data-prompt');
+            sendPresetPrompt(prompt);
+        });
+    });
+});
+</script>
+{% endblock %} 
