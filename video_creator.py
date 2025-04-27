@@ -257,22 +257,21 @@ def create_video(title, labels, output_path="output.mp4"):
             pass
     
     # Print hashtags and caption for easy copying
-    print("\n\n=== Copy these hashtags ===")
-    print("#fyp #foryou #productivity")
-    print("\n=== Copy this caption ===")
-    print("Use PortableDocs to converse with your PDF. No need to read hours of documents. Let our AI handle it for you :)")
+    print("\n\n=== Copy and paste this caption ===")
+    print("Use PortableDocs to converse with your PDF. No need to read hours of documents. Let our AI handle it for you")
     print("Search PortableDocs or head to link in bio.")
+    print("\n#fyp #foryou #productivity #viral #trending")
     print("\nVideo creation complete! 🎥")
 
 # Example usage
 if __name__ == "__main__":
-    title = "The hardest working jobs"
+    title = "How smart people use AI"
     
     labels = [
-        "Construction",
-        "Doctor",
-        "Programmer",
-        "Teacher",
+        "Simplify Documents",
+        "Quick Summaries",
+        "Emails",
+        "Research Papers",
     ]
     
     create_video(title, labels)

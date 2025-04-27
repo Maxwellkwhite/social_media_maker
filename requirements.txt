@@ -25,3 +25,4 @@ requests>=2.31.0
 #secrets==2.0.0
 #MIMEText==0.1.0
 #MIMEMultipart==0.1.0
+instagrapi==2.0.0

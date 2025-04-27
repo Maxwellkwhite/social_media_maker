@@ -110,23 +110,6 @@ class blog_posts(db.Model):
     author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
     slug: Mapped[str] = mapped_column(String(200), unique=True)
 
-class Todo(db.Model):
-    __tablename__ = "todos"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
-    text: Mapped[str] = mapped_column(String(500))
-    completed: Mapped[bool] = mapped_column(Boolean, default=False)
-    completed_at: Mapped[DateTime] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.utcnow)
-    # Add relationship to User
-    user = relationship("User", backref="todos")
-
-class Suggestion(db.Model):
-    __tablename__ = "suggestions"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    category: Mapped[str] = mapped_column(String(50), nullable=False)
-
 
 
 with app.app_context():
@@ -220,7 +203,6 @@ def logout():
     logout_user()
     return redirect(url_for('home_page'))
 
-'''Commenting out for now
 
 #for test of Stripe
 YOUR_DOMAIN = 'http://127.0.0.1:5002'
@@ -531,7 +513,7 @@ def manage_membership():
         print(f"Error: {str(e)}")
         flash('An unexpected error occurred. Please try again later.', 'error')
         return redirect(url_for('profile'))
-'''
+
 @app.route('/profile', methods=['POST', 'GET'])
 @login_required
 def profile():
@@ -900,202 +882,7 @@ def cron_reset_monthly_questions():
         }), 500
 
 '''
-@app.route('/launch-app', methods=['POST'])
-def launch_app():
-    try:
-        data = request.get_json()
-        app_name = data.get('app_name')
-        
-        # Map of app names to their web URLs
-        app_urls = {
-            'lucidchart': 'https://www.lucidchart.com',
-            'draw.io': 'https://app.diagrams.net',
-            'miro': 'https://miro.com',
-            'google_slides': 'https://slides.google.com',
-            'prezi': 'https://prezi.com',
-            'canva': 'https://www.canva.com',
-            'google_sheets': 'https://sheets.google.com',
-            'airtable': 'https://airtable.com',
-            'zoho_sheet': 'https://sheet.zoho.com',
-            'notion': 'https://www.notion.so',
-            'evernote': 'https://www.evernote.com',
-            'onenote': 'https://www.onenote.com',
-            'todoist': 'https://todoist.com',
-            'asana': 'https://asana.com',
-            'trello': 'https://trello.com',
-            'figma': 'https://www.figma.com',
-            'photopea': 'https://www.photopea.com',
-            'clipchamp': 'https://clipchamp.com',
-            'kapwing': 'https://www.kapwing.com',
-            'wevideo': 'https://www.wevideo.com',
-            'google_meet': 'https://meet.google.com',
-            'zoom': 'https://zoom.us',
-            'microsoft_teams': 'https://teams.microsoft.com',
-            'gmail': 'https://mail.google.com',
-            'outlook': 'https://outlook.live.com',
-            'yahoo_mail': 'https://mail.yahoo.com',
-            'slack': 'https://slack.com',
-            'discord': 'https://discord.com',
-            'google_docs': 'https://docs.google.com',
-            'microsoft_word': 'https://www.office.com/launch/word',
-            'zoho_writer': 'https://writer.zoho.com',
-            'monday': 'https://monday.com',
-            'jira': 'https://www.atlassian.com/software/jira',
-            'clickup': 'https://clickup.com',
-            'google_drive': 'https://drive.google.com',
-            'dropbox': 'https://www.dropbox.com',
-            'onedrive': 'https://onedrive.live.com',
-            'adobe_xd': 'https://xd.adobe.com',
-            'github_codespaces': 'https://github.com/features/codespaces',
-            'replit': 'https://replit.com',
-            'codesandbox': 'https://codesandbox.io',
-            'google_data_studio': 'https://datastudio.google.com',
-            'tableau': 'https://public.tableau.com',
-            'power_bi': 'https://app.powerbi.com',
-            'supabase': 'https://supabase.com',
-            'firebase': 'https://firebase.google.com',
-            'mongodb_atlas': 'https://www.mongodb.com/cloud/atlas',
-            'excel': 'https://www.office.com/launch/excel',
-            'mysql': 'https://www.mysql.com',
-            'pgadmin': 'https://www.pgadmin.org',
-            'mongodb': 'https://www.mongodb.com',
-            'vscode': 'https://code.visualstudio.com',
-            'intellij': 'https://www.jetbrains.com/idea',
-            'sublime': 'https://www.sublimetext.com',
-            'visio': 'https://www.microsoft.com/en-us/microsoft-365/visio/flowchart-software',
-            'powerpoint': 'https://www.office.com/launch/powerpoint',
-            'numbers': 'https://www.apple.com/numbers/',
-            'microsoft_todo': 'https://todo.microsoft.com',
-            'photoshop': 'https://www.adobe.com/products/photoshop.html',
-            'illustrator': 'https://www.adobe.com/products/illustrator.html',
-            'premiere': 'https://www.adobe.com/products/premiere.html',
-            'camtasia': 'https://www.techsmith.com/video-editor.html',
-            'davinci': 'https://www.blackmagicdesign.com/products/davinciresolve',
-            'acrobat': 'https://www.adobe.com/acrobat.html',
-            'microsoft_project': 'https://www.microsoft.com/en-us/microsoft-365/project/project-management-software',
-            'sketch': 'https://www.sketch.com',
-            'dbeaver': 'https://dbeaver.io'
-        }
-        
-        # Convert app_name to lowercase and replace spaces with underscores
-        app_key = app_name.lower().replace(' ', '_')
-        
-        if app_key in app_urls:
-            return jsonify({
-                'success': True,
-                'web_url': app_urls[app_key]
-            })
-        else:
-            return jsonify({
-                'success': False,
-                'error': 'Application not found'
-            }), 404
-            
-    except Exception as e:
-        logger.error(f"Error launching app: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': 'An error occurred while launching the application'
-        }), 500
 
-@app.route('/api/todos', methods=['GET'])
-@login_required
-def get_todos():
-    todos = Todo.query.filter_by(user_id=current_user.id).order_by(Todo.created_at.asc()).all()
-    return jsonify([{
-        'id': todo.id,
-        'text': todo.text,
-        'completed': todo.completed,
-        'completed_at': todo.completed_at.isoformat() if todo.completed_at else None,
-        'created_at': todo.created_at.isoformat()
-    } for todo in todos])
-
-@app.route('/api/todos', methods=['POST'])
-@login_required
-def add_todo():
-    data = request.get_json()
-    todo = Todo(
-        text=data['text'],
-        user_id=current_user.id
-    )
-    db.session.add(todo)
-    db.session.commit()
-    return jsonify({
-        'id': todo.id,
-        'text': todo.text,
-        'completed': todo.completed,
-        'completed_at': todo.completed_at.isoformat() if todo.completed_at else None,
-        'created_at': todo.created_at.isoformat()
-    })
-
-@app.route('/api/todos/<int:todo_id>', methods=['PUT'])
-@login_required
-def update_todo(todo_id):
-    todo = Todo.query.filter_by(id=todo_id, user_id=current_user.id).first_or_404()
-    data = request.get_json()
-    
-    if 'text' in data:
-        todo.text = data['text']
-    if 'completed' in data:
-        todo.completed = data['completed']
-        if data['completed'] and not todo.completed_at:
-            todo.completed_at = datetime.utcnow()
-        elif not data['completed']:
-            todo.completed_at = None
-    
-    db.session.commit()
-    return jsonify({
-        'id': todo.id,
-        'text': todo.text,
-        'completed': todo.completed,
-        'completed_at': todo.completed_at.isoformat() if todo.completed_at else None,
-        'created_at': todo.created_at.isoformat()
-    })
-
-@app.route('/api/todos/<int:todo_id>', methods=['DELETE'])
-@login_required
-def delete_todo(todo_id):
-    todo = Todo.query.filter_by(id=todo_id, user_id=current_user.id).first_or_404()
-    db.session.delete(todo)
-    db.session.commit()
-    return '', 204
-
-@app.route('/api/todos/<int:todo_id>', methods=['GET'])
-@login_required
-def get_todo(todo_id):
-    todo = Todo.query.filter_by(id=todo_id, user_id=current_user.id).first_or_404()
-    return jsonify({
-        'id': todo.id,
-        'text': todo.text,
-        'completed': todo.completed,
-        'completed_at': todo.completed_at.isoformat() if todo.completed_at else None,
-        'created_at': todo.created_at.isoformat()
-    })
-
-@app.route('/api/suggestions', methods=['POST'])
-def submit_suggestion():
-    data = request.get_json()
-    name = data.get('name')
-    category = data.get('category')
-    
-    # Validate required fields
-    if not name or not category:
-        return jsonify({
-            'error': 'Missing required fields: name and category are required'
-        }), 400
-    
-    # Create a new suggestion
-    suggestion = Suggestion(
-        name=name,
-        category=category
-    )
-    db.session.add(suggestion)
-    db.session.commit()
-    
-    return jsonify({
-        'success': True,
-        'message': 'Suggestion submitted successfully'
-    }), 200
 
 if __name__ == "__main__":
     app.run(debug=False, port=5002)
