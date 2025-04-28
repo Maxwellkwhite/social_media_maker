@@ -265,13 +265,13 @@ def create_video(title, labels, output_path="output.mp4"):
 
 # Example usage
 if __name__ == "__main__":
-    title = "How smart people use AI"
+    title = "Most Creative Jobs"
     
     labels = [
-        "Simplify Documents",
-        "Quick Summaries",
-        "Emails",
-        "Research Papers",
+        "Engineer",
+        "Designer",
+        "Writer",
+        "Developer",
     ]
     
     create_video(title, labels)

@@ -34,7 +34,7 @@ app = Flask(__name__)
 # Initialize Bootstrap after creating the app
 bootstrap = Bootstrap5(app)
 ckeditor = CKEditor(app)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = "os.environ.get('SECRET_KEY')"
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -118,7 +118,11 @@ with app.app_context():
 
 @app.route('/', methods=["GET", "POST"])
 def home_page():
-    return render_template('todo.html')
+    return render_template('index.html')
+
+@app.route('/dashboard', methods=["GET", "POST"])
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route('/price-page', methods=["GET", "POST"])
 def price_page():
@@ -885,7 +889,7 @@ def cron_reset_monthly_questions():
 
 
 if __name__ == "__main__":
-    app.run(debug=False, port=5002)
+    app.run(debug=True, port=5002)
 
 
 
