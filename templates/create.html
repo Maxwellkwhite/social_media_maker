@@ -1,0 +1,71 @@
+{% include "header.html" %}
+{% if post_type == '2x2' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>PortableDocs - Chat with your PDFs using AI</title>
+</head>
+<body class="tech-theme">
+    <div class="container">
+        <section class="features-section">
+            <h2 class="section-title">2x2 Grid Builder</h2>
+            <div class="create-page">
+                <div class="create-form">
+                    <form method="post" class="step">
+                        {{ form.csrf_token }}
+                        
+                        <div class="form-group">
+                            <label>{{ form.title.label }}</label>
+                            {{ form.title(class="form-control") }}
+                        </div>
+
+                        <div class="label-grid">
+                            <div class="label-group">
+                                <label>{{ form.label1.label }}</label>
+                                {{ form.label1(class="form-control") }}
+                            </div>
+
+                            <div class="label-group">
+                                <label>{{ form.label2.label }}</label>
+                                {{ form.label2(class="form-control") }}
+                            </div>
+
+                            <div class="label-group">
+                                <label>{{ form.label3.label }}</label>
+                                {{ form.label3(class="form-control") }}
+                            </div>
+
+                            <div class="label-group">
+                                <label>{{ form.label4.label }}</label>
+                                {{ form.label4(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Choose Background Music</label>
+                            <select name="music" class="form-control">
+                                <option value="1">Chill</option>
+                                <option value="2">Suspense</option>
+                                <option value="3">Upbeat</option>
+                            </select>
+                        </div>
+
+                        {{ form.submit(class="small-tech-button") }}
+                    </form>
+                </div>
+
+                <div class="video-preview">
+                    <div class="video-preview-placeholder">
+                        Video Preview Will Appear Here
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
+{% elif post_type == 'more_likely_to' %}
+Hello
+{% endif %}
+{% include "footer.html" %}

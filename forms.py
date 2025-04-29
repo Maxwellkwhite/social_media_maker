@@ -45,3 +45,11 @@ class FeedbackForm(BaseForm):
     feedback = TextAreaField("Feedback", validators=[DataRequired()], 
                            description="Please provide your detailed feedback")
     submit = SubmitField("Provide Feedback")
+
+class TwoByTwoForm(BaseForm):
+    title = StringField("Title", validators=[DataRequired()])
+    label1 = StringField("Label 1", validators=[DataRequired()])
+    label2 = StringField("Label 2", validators=[DataRequired()])
+    label3 = StringField("Label 3", validators=[DataRequired()])
+    label4 = StringField("Label 4", validators=[DataRequired()])
+    submit = SubmitField("Create Post")

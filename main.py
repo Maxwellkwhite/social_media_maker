@@ -17,7 +17,7 @@ import os
 import secrets
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from forms import AuthForms, FeedbackForm
+from forms import AuthForms, FeedbackForm, TwoByTwoForm
 from datetime import datetime, date
 from werkzeug.utils import secure_filename
 from flask_bootstrap import Bootstrap5
@@ -123,6 +123,15 @@ def home_page():
 @app.route('/dashboard', methods=["GET", "POST"])
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/create/<post_type>', methods=["GET", "POST"])
+def create(post_type):
+    if post_type == '2x2':
+        form = TwoByTwoForm()
+        return render_template('create.html', post_type=post_type, form=form)
+    elif post_type == 'more_likely_to':
+        #form = MoreLikelyToForm()
+        return render_template('create.html', post_type=post_type, form=form)
 
 @app.route('/price-page', methods=["GET", "POST"])
 def price_page():

@@ -18,16 +18,16 @@
                     </div>
                     <h3>2x2 Grid</h3>
                     <p>One title, four images. All images relate to the title.</p>
-                    <a href="" class="small-tech-button">Create</a>
+                    <a href="{{ url_for('create', post_type='2x2') }}" class="small-tech-button">Create</a>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-clock"></i>
                     </div>
-                    <h3>Placeholder</h3>
-                    <p>Placeholder</p>
-                    <a href="" class="small-tech-button">Create</a>
+                    <h3>More Likely To</h3>
+                    <p>One title, two images. All images relate to the title.</p>
+                    <a href="{{ url_for('create', post_type='more_likely_to') }}" class="small-tech-button">Create</a>
                 </div>
             </div>
         </section>
