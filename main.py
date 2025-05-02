@@ -128,6 +128,38 @@ def dashboard():
 def create(post_type):
     if post_type == '2x2':
         form = TwoByTwoForm()
+        if form.validate_on_submit():
+            try:
+                # Get form values
+                title = form.title.data
+                labels = [
+                    form.label1.data,
+                    form.label2.data,
+                    form.label3.data,
+                    form.label4.data
+                ]
+                music_choice = request.form.get('music', '1')  # Default to chill music
+                
+                # Generate a unique filename for the video
+                video_filename = f"output_{uuid.uuid4().hex}.mp4"
+                output_path = os.path.join('static', 'videos', video_filename)
+                
+                # Ensure the videos directory exists
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+                
+                # Create the video
+                from video_creator import create_video
+                create_video(title, labels, output_path, music_choice)
+                
+                # Return the video path to the template
+                video_url = url_for('static', filename=f'videos/{video_filename}')
+                return render_template('create.html', post_type=post_type, form=form, video_url=video_url)
+                
+            except Exception as e:
+                print(f"Error creating video: {str(e)}")
+                flash("An error occurred while creating the video. Please try again.")
+                return render_template('create.html', post_type=post_type, form=form)
+                
         return render_template('create.html', post_type=post_type, form=form)
     elif post_type == 'more_likely_to':
         #form = MoreLikelyToForm()

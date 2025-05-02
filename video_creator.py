@@ -189,7 +189,7 @@ def create_image_grid(image_paths, labels, size=(1080, 1620), duration=5):
     
     return ImageClip(np.array(background)).set_duration(duration)
 
-def create_video(title, labels, output_path="output.mp4"):
+def create_video(title, labels, output_path="output.mp4", music_choice='1'):
     # Fetch images for each label
     image_paths = []
     temp_files = []
@@ -217,22 +217,13 @@ def create_video(title, labels, output_path="output.mp4"):
     # Add fade-in effect (0.5 second duration)
     final_clip = final_clip.fadein(0.5)
     
-    # Get music choice from user
-    while True:
-        print("\nSelect background music:")
-        print("1. Chill")
-        print("2. Suspense")
-        print("3. Upbeat")
-        choice = input("Enter your choice (1-3): ")
-        
-        if choice in MUSIC_CHOICES:
-            music_path = MUSIC_CHOICES[choice]
-            if os.path.exists(music_path):
-                break
-            else:
-                print(f"Error: Music file {music_path} not found. Please ensure the music files are in the same directory.")
-        else:
-            print("Invalid choice. Please enter 1, 2, or 3.")
+    # Get music path based on choice
+    if music_choice in MUSIC_CHOICES:
+        music_path = MUSIC_CHOICES[music_choice]
+        if not os.path.exists(music_path):
+            raise Exception(f"Music file {music_path} not found")
+    else:
+        raise Exception("Invalid music choice")
     
     # Add background music
     audio = AudioFileClip(music_path)
@@ -265,13 +256,13 @@ def create_video(title, labels, output_path="output.mp4"):
 
 # Example usage
 if __name__ == "__main__":
-    title = "Most boring jobs"
+    title = "Most usefull college degrees"
     
     labels = [
-        "Accountant",
-        "Insurance Agent",
-        "Cleaner",
-        "Banker",
+        "Computer Science",
+        "Business",
+        "Engineering",
+        "Chemistry",
     ]
     
     create_video(title, labels)
