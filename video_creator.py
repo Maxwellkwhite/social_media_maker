@@ -256,13 +256,13 @@ def create_video(title, labels, output_path="output.mp4", music_choice='1'):
 
 # Example usage
 if __name__ == "__main__":
-    title = "Most usefull college degrees"
+    title = "Least productive people"
     
     labels = [
-        "Computer Science",
-        "Business",
-        "Engineering",
-        "Chemistry",
+        "Work from Home",
+        "Procrastinators",
+        "Gamers",
+        "Middle Managers",
     ]
     
     create_video(title, labels)

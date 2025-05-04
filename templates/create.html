@@ -4,41 +4,43 @@
 <html lang="en">
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>PortableDocs - Chat with your PDFs using AI</title>
 </head>
 <body class="tech-theme">
     <div class="container">
         <section class="features-section">
             <h2 class="section-title">2x2 Grid Builder</h2>
-            <div class="create-page">
+            <div class="preview-container">
                 <div class="create-form">
                     <form method="post" class="step">
                         {{ form.csrf_token }}
                         
                         <div class="form-group">
                             <label>{{ form.title.label }}</label>
-                            {{ form.title(class="form-control") }}
+                            {{ form.title(class="form-control", placeholder="Enter your title", id="title-input") }}
                         </div>
 
                         <div class="label-grid">
                             <div class="label-group">
                                 <label>{{ form.label1.label }}</label>
-                                {{ form.label1(class="form-control") }}
+                                {{ form.label1(class="form-control", placeholder="Enter label 1", id="label1-input") }}
                             </div>
 
                             <div class="label-group">
                                 <label>{{ form.label2.label }}</label>
-                                {{ form.label2(class="form-control") }}
+                                {{ form.label2(class="form-control", placeholder="Enter label 2", id="label2-input") }}
                             </div>
 
                             <div class="label-group">
                                 <label>{{ form.label3.label }}</label>
-                                {{ form.label3(class="form-control") }}
+                                {{ form.label3(class="form-control", placeholder="Enter label 3", id="label3-input") }}
                             </div>
 
                             <div class="label-group">
                                 <label>{{ form.label4.label }}</label>
-                                {{ form.label4(class="form-control") }}
+                                {{ form.label4(class="form-control", placeholder="Enter label 4", id="label4-input") }}
                             </div>
                         </div>
 
@@ -56,15 +58,30 @@
                 </div>
 
                 <div class="video-preview">
-                    {% if video_url %}
-                        <video controls>
-                            <source src="{{ video_url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    {% else %}
-                        <div class="video-preview-placeholder">
-                            Video Preview Will Appear Here
+                    <div class="preview-title" id="preview-title">Your Title Here</div>
+                    <div class="preview-grid">
+                        <div class="preview-cell">
+                            <div class="preview-label" id="preview-label1">Label 1</div>
+                            <div class="preview-placeholder">Image will appear here</div>
                         </div>
+                        <div class="preview-cell">
+                            <div class="preview-label" id="preview-label2">Label 2</div>
+                            <div class="preview-placeholder">Image will appear here</div>
+                        </div>
+                        <div class="preview-cell">
+                            <div class="preview-label" id="preview-label3">Label 3</div>
+                            <div class="preview-placeholder">Image will appear here</div>
+                        </div>
+                        <div class="preview-cell">
+                            <div class="preview-label" id="preview-label4">Label 4</div>
+                            <div class="preview-placeholder">Image will appear here</div>
+                        </div>
+                    </div>
+                    {% if video_url %}
+                    <video class="preview-video active" controls>
+                        <source src="{{ video_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                     {% endif %}
                 </div>
             </div>
@@ -75,4 +92,44 @@
 {% elif post_type == 'more_likely_to' %}
 Hello
 {% endif %}
+<script>
+if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+}
+
+// Add real-time preview updates
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title-input');
+    const label1Input = document.getElementById('label1-input');
+    const label2Input = document.getElementById('label2-input');
+    const label3Input = document.getElementById('label3-input');
+    const label4Input = document.getElementById('label4-input');
+
+    const previewTitle = document.getElementById('preview-title');
+    const previewLabel1 = document.getElementById('preview-label1');
+    const previewLabel2 = document.getElementById('preview-label2');
+    const previewLabel3 = document.getElementById('preview-label3');
+    const previewLabel4 = document.getElementById('preview-label4');
+
+    function updatePreview(input, preview) {
+        input.addEventListener('input', function() {
+            preview.textContent = this.value || preview.getAttribute('data-default');
+        });
+    }
+
+    // Set default values
+    previewTitle.setAttribute('data-default', 'Your Title Here');
+    previewLabel1.setAttribute('data-default', 'Label 1');
+    previewLabel2.setAttribute('data-default', 'Label 2');
+    previewLabel3.setAttribute('data-default', 'Label 3');
+    previewLabel4.setAttribute('data-default', 'Label 4');
+
+    updatePreview(titleInput, previewTitle);
+    updatePreview(label1Input, previewLabel1);
+    updatePreview(label2Input, previewLabel2);
+    updatePreview(label3Input, previewLabel3);
+    updatePreview(label4Input, previewLabel4);
+});
+</script>
+
 {% include "footer.html" %}
