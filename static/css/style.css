@@ -989,3 +989,33 @@
         max-width: 100%;
     }
 }
+
+.music-select-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.preview-button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.preview-button:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.preview-button i {
+    font-size: 16px;
+}

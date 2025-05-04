@@ -46,11 +46,19 @@
 
                         <div class="form-group">
                             <label>Choose Background Music</label>
-                            <select name="music" class="form-control">
-                                <option value="1">Chill</option>
-                                <option value="2">Suspense</option>
-                                <option value="3">Upbeat</option>
-                            </select>
+                            <div class="music-select-container">
+                                <select name="music" class="form-control" id="music-select">
+                                    <option value="1">Chill</option>
+                                    <option value="2">Suspense</option>
+                                    <option value="3">Upbeat</option>
+                                </select>
+                                <button type="button" class="preview-button" id="preview-music" title="Preview music">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+                            <audio id="chill-audio" src="/background_music/chill.mp3"></audio>
+                            <audio id="suspense-audio" src="/background_music/suspense.mp3"></audio>
+                            <audio id="upbeat-audio" src="/background_music/upbeat.mp3"></audio>
                         </div>
 
                         {{ form.submit(class="small-tech-button") }}
@@ -129,6 +137,51 @@ document.addEventListener('DOMContentLoaded', function() {
     updatePreview(label2Input, previewLabel2);
     updatePreview(label3Input, previewLabel3);
     updatePreview(label4Input, previewLabel4);
+
+    const previewButton = document.getElementById('preview-music');
+    const musicSelect = document.getElementById('music-select');
+    const audioElements = {
+        1: document.getElementById('chill-audio'),
+        2: document.getElementById('suspense-audio'),
+        3: document.getElementById('upbeat-audio')
+    };
+
+    previewButton.addEventListener('click', function() {
+        const selectedMusic = musicSelect.value;
+        const audio = audioElements[selectedMusic];
+        
+        // Stop any currently playing audio
+        Object.values(audioElements).forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+
+        // Add error handling
+        audio.onerror = function(e) {
+            console.error('Error playing audio:', e);
+            alert('Error playing audio preview. Please check the console for details.');
+        };
+
+        // Add logging
+        console.log('Attempting to play audio:', audio.src);
+        
+        // Play the selected audio for 5 seconds
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                console.log('Audio started playing successfully');
+                setTimeout(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }, 5000);
+            })
+            .catch(error => {
+                console.error('Error playing audio:', error);
+                alert('Error playing audio preview. Please check the console for details.');
+            });
+        }
+    });
 });
 </script>
 

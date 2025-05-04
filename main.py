@@ -927,6 +927,14 @@ def cron_reset_monthly_questions():
         }), 500
 
 '''
+@app.route('/background_music/<path:filename>')
+def serve_background_music(filename):
+    print(f"Attempting to serve audio file: {filename}")
+    try:
+        return send_file(f'background_music/{filename}')
+    except Exception as e:
+        print(f"Error serving audio file: {str(e)}")
+        return str(e), 404
 
 
 if __name__ == "__main__":
