@@ -100,6 +100,31 @@
 {% elif post_type == 'more_likely_to' %}
 Hello
 {% endif %}
+
+<!-- Video Preview Modal -->
+<div class="modal" id="videoModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Your Video is Ready!</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <video id="modalVideo" controls>
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="download-btn" download>
+                <i class="fas fa-download"></i> Download Video
+            </a>
+            <button class="edit-btn">
+                <i class="fas fa-edit"></i> Edit Video
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 if (window.history.replaceState) {
     window.history.replaceState(null, null, window.location.href);
@@ -181,6 +206,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Error playing audio preview. Please check the console for details.');
             });
         }
+    });
+});
+
+// Add modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('videoModal');
+    const closeBtn = document.querySelector('.close-modal');
+    const modalVideo = document.getElementById('modalVideo');
+    const downloadBtn = document.querySelector('.download-btn');
+    const editBtn = document.querySelector('.edit-btn');
+
+    // Show modal when video is created
+    {% if video_url %}
+    modal.style.display = 'block';
+    modalVideo.src = '{{ video_url }}';
+    downloadBtn.href = '{{ video_url }}';
+    {% endif %}
+
+    // Close modal when clicking the X
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Edit button functionality
+    editBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        // Scroll to top of form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
 </script>
