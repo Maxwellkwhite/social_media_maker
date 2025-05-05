@@ -121,6 +121,9 @@ Hello
             <button class="edit-btn">
                 <i class="fas fa-edit"></i> Edit Video
             </button>
+            <button class="instagram-btn" id="instagram-post-btn">
+                <i class="fab fa-instagram"></i> Post to Instagram
+            </button>
         </div>
     </div>
 </div>
@@ -241,6 +244,49 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
         // Scroll to top of form
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Instagram post button functionality
+    const instagramBtn = document.getElementById('instagram-post-btn');
+    instagramBtn.addEventListener('click', function() {
+        const videoUrl = modalVideo.src;
+        
+        // Show loading state
+        instagramBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+        instagramBtn.disabled = true;
+
+        // Send request to post to Instagram
+        fetch('/post-to-instagram', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `video_url=${encodeURIComponent(videoUrl)}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to post to Instagram');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Video posted to Instagram successfully!');
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
+            }
+        })
+        .catch(error => {
+            console.error('Instagram posting error:', error);
+            alert('Error posting to Instagram: ' + error.message);
+        })
+        .finally(() => {
+            // Reset button state
+            instagramBtn.innerHTML = '<i class="fab fa-instagram"></i> Post to Instagram';
+            instagramBtn.disabled = false;
+        });
     });
 });
 </script>

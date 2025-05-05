@@ -31,7 +31,54 @@
                 </div>
             </div>
         </section>
+
+        <section class="test-section">
+            <button id="testInstagramBtn" class="small-tech-button">Test Instagram Connection</button>
+            <div id="testResult"></div>
+        </section>
     </div>
+
+    <script>
+        document.getElementById('testInstagramBtn').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.textContent = 'Testing Instagram connection...';
+            
+            try {
+                const response = await fetch('/test-instagram-connection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'  // Important for session cookies
+                });
+                
+                // Handle 401 Unauthorized
+                if (response.status === 401) {
+                    window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error(`Server returned non-JSON response: ${text}`);
+                }
+                
+                if (response.ok) {
+                    resultDiv.textContent = 'Success! Instagram connection test passed.';
+                } else {
+                    resultDiv.textContent = `Error: ${data.error || 'Unknown error occurred'}`;
+                }
+            } catch (error) {
+                console.error('Error details:', error);
+                resultDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
 </body>
 </html>
 {% include "footer.html" %}

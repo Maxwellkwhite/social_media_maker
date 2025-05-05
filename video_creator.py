@@ -5,6 +5,8 @@ import os
 import requests
 import tempfile
 from urllib.parse import quote
+from instagrapi import Client
+from instagrapi.exceptions import LoginRequired, ClientError
 
 # Add music file paths
 MUSIC_CHOICES = {
@@ -12,6 +14,10 @@ MUSIC_CHOICES = {
     '2': 'background_music/suspense.mp3',
     '3': 'background_music/upbeat.mp3'
 }
+
+# Instagram credentials
+INSTAGRAM_USERNAME = 'PortableDocs'
+INSTAGRAM_PASSWORD = 'Gocubsgo617!'
 
 def download_image(url, label):
     """Download image from URL and save it temporarily"""
@@ -189,7 +195,62 @@ def create_image_grid(image_paths, labels, size=(1080, 1620), duration=5):
     
     return ImageClip(np.array(background)).set_duration(duration)
 
-def create_video(title, labels, output_path="output.mp4", music_choice='1'):
+def post_to_instagram(video_path, caption):
+    """Post a video to Instagram"""
+    try:
+        # Initialize the client
+        cl = Client()
+        cl.delay_range = [1, 3]  # Add delay between actions to avoid rate limiting
+        
+        # Try to load settings from file
+        settings_file = 'instagram_settings.json'
+        if os.path.exists(settings_file):
+            try:
+                cl.load_settings(settings_file)
+                print("Successfully loaded settings from file")
+            except Exception as e:
+                print(f"Error loading settings: {str(e)}")
+        
+        # Login to Instagram
+        try:
+            print(f"Attempting to login with username: {INSTAGRAM_USERNAME}")
+            cl.login(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
+            print("Login successful")
+            
+            # Save settings after successful login
+            cl.dump_settings(settings_file)
+            print("Settings saved successfully")
+            
+        except LoginRequired as e:
+            print(f"Login required error: {str(e)}")
+            return False, f'Login failed: {str(e)}'
+        except ClientError as e:
+            print(f"Client error: {str(e)}")
+            return False, f'Client error: {str(e)}'
+        except Exception as e:
+            print(f"Unexpected error during login: {str(e)}")
+            return False, f'Unexpected error: {str(e)}'
+
+        # Upload the video
+        try:
+            print("Attempting to upload video...")
+            media = cl.clip_upload(
+                path=video_path,
+                caption=caption
+            )
+            print(f"Video uploaded successfully. Media ID: {media.pk}")
+            
+            return True, f'Video posted successfully! View it at: https://instagram.com/p/{media.code}'
+            
+        except Exception as e:
+            print(f"Error uploading video: {str(e)}")
+            return False, f'Failed to upload video: {str(e)}'
+
+    except Exception as e:
+        print(f"Unexpected error in post_to_instagram: {str(e)}")
+        return False, str(e)
+
+def create_video(title, labels, output_path="output.mp4", music_choice='1', post_to_ig=False):
     # Fetch images for each label
     image_paths = []
     temp_files = []
@@ -247,22 +308,53 @@ def create_video(title, labels, output_path="output.mp4", music_choice='1'):
         except:
             pass
     
+    # Create caption
+    caption = f"{title}\n\n"
+    for label in labels:
+        caption += f"#{label.replace(' ', '')} "
+    caption += "\n\n#fyp #foryou #productivity #viral #trending"
+    
     # Print hashtags and caption for easy copying
     print("\n\n=== Copy and paste this caption ===")
-    print("Use PortableDocs to converse with your PDF. No need to read hours of documents.")
-    print("Search PortableDocs or head to link in bio.")
-    print("\n#fyp #foryou #productivity #viral #trending")
+    print(caption)
+    
+    # Post to Instagram if requested
+    if post_to_ig:
+        success, message = post_to_instagram(output_path, caption)
+        print(f"\nInstagram posting result: {message}")
+    
     print("\nVideo creation complete! 🎥")
 
 # Example usage
 if __name__ == "__main__":
-    title = "Least productive people"
-    
+    # Hardcoded title and labels - Edit these values to change the content
+    title = "People with these degrees are happiest"
     labels = [
-        "Work from Home",
-        "Procrastinators",
-        "Gamers",
-        "Middle Managers",
+        "Art",
+        "Criminology",
+        "Psychology",
+        "Exercise Science",
     ]
     
-    create_video(title, labels)
+    # Get music choice from user
+    print("\nChoose background music:")
+    print("1. Chill")
+    print("2. Suspense")
+    print("3. Upbeat")
+    music_choice = input("Enter your choice (1-3): ")
+    while music_choice not in ['1', '2', '3']:
+        print("Invalid choice. Please enter 1, 2, or 3.")
+        music_choice = input("Enter your choice (1-3): ")
+    
+    # Create the video
+    create_video(title, labels, music_choice=music_choice)
+    
+    # Ask if user wants to post to Instagram
+    post_to_ig = input("\nWould you like to post this video to Instagram? (y/n): ").lower()
+    while post_to_ig not in ['y', 'n']:
+        print("Invalid choice. Please enter 'y' or 'n'.")
+        post_to_ig = input("Would you like to post this video to Instagram? (y/n): ").lower()
+    
+    if post_to_ig == 'y':
+        success, message = post_to_instagram("output.mp4", f"{title}\n\n" + " ".join(f"#{label.replace(' ', '')}" for label in labels) + "\n\n#fyp #foryou #productivity #viral #trending")
+        print(f"\nInstagram posting result: {message}")

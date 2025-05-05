@@ -15,6 +15,7 @@ import json
 import datetime
 import os
 import secrets
+import requests
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from forms import AuthForms, FeedbackForm, TwoByTwoForm
@@ -24,11 +25,17 @@ from flask_bootstrap import Bootstrap5
 import subprocess
 import platform
 import uuid
+import time
+from instagrapi import Client
+from instagrapi.exceptions import LoginRequired, ClientError
 
 
 APP_NAME = 'Ticklis'
 stripe.api_key = os.environ.get('STRIPE_API')
 
+# Instagram API Configuration
+INSTAGRAM_USERNAME = 'PortableDocs'
+INSTAGRAM_PASSWORD = 'Gocubsgo617!'
 
 app = Flask(__name__)
 # Initialize Bootstrap after creating the app
@@ -853,80 +860,145 @@ def resend_verification():
         flash("Error sending verification email. Please try again or contact support.")
     
     return redirect(url_for('login'))
-'''Commenting out for now
-@app.route('/blog')
-def blog():
-    # Get all blog posts ordered by date descending
-    posts = db.session.execute(db.select(blog_posts).order_by(blog_posts.date.desc())).scalars()
-    return render_template('blog.html', posts=posts)
 
-@app.route('/blog/<string:post_slug>')
-def show_post(post_slug):
-    # Get specific blog post by slug
-    post = blog_posts.query.filter_by(slug=post_slug).first_or_404()
-    
-    related_posts = blog_posts.query.filter(
-        blog_posts.id != post.id,
-        (blog_posts.title.ilike(f"%{post.title}%") | 
-         blog_posts.content.ilike(f"%{post.content}%"))
-    ).limit(5).all()
-    
-    random_posts = blog_posts.query.order_by(func.random()).limit(4).all()
-    return render_template('blog_post.html', post=post, related_posts=related_posts, random_posts=random_posts)
-
-@app.route('/new-post', methods=['GET', 'POST'])
+@app.route('/post-to-instagram', methods=['POST'])
 @login_required
-def add_post():
-    form = BlogPostForm()
-    if form.validate_on_submit():
-        # Create URL-friendly slug from title
-        slug = "-".join(form.title.data.lower().split())
-        
-        new_post = blog_posts(
-            title=form.title.data,
-            content=form.content.data,
-            date=date.today(),
-            author_id=current_user.id,
-            slug=slug
-        )
-        db.session.add(new_post)
-        db.session.commit()
-        return redirect(url_for('blog'))
-        
-    return render_template('create_blog_post.html', form=form)
-
-@app.route('/cron/reset-monthly-questions', methods=['POST'])
-def cron_reset_monthly_questions():
-    # Verify the request is from Render using a secret token
-    auth_token = request.headers.get('Authorization')
-    expected_token = os.environ.get('CRON_SECRET_TOKEN')
-    
-    if not auth_token or auth_token != f"Bearer {expected_token}":
-        return jsonify({'error': 'Unauthorized'}), 401
-    
+def post_to_instagram():
+    temp_video_path = None
     try:
-        # Reset monthly_questions to 0 for all users
-        User.query.update({User.monthly_questions: 0})
-        db.session.commit()
-        
-        # Log the successful reset
-        print(f"Successfully reset monthly questions at {datetime.now()}")
-        return jsonify({
-            'success': True,
-            'message': 'Monthly questions reset successfully',
-            'timestamp': datetime.now().isoformat()
-        }), 200
-        
-    except Exception as e:
-        print(f"Error resetting monthly questions: {str(e)}")
-        db.session.rollback()
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'timestamp': datetime.now().isoformat()
-        }), 500
+        video_url = request.form.get('video_url')
+        if not video_url:
+            print("Error: No video URL provided")
+            return jsonify({'error': 'No video URL provided'}), 400
 
-'''
+        # Download the video to a temporary file
+        print(f"Attempting to download video from: {video_url}")
+        response = requests.get(video_url)
+        if response.status_code != 200:
+            print(f"Error: Failed to download video. Status code: {response.status_code}")
+            return jsonify({'error': f'Failed to download video. Status code: {response.status_code}'}), 400
+
+        temp_video_path = f'temp_{uuid.uuid4().hex}.mp4'
+        with open(temp_video_path, 'wb') as f:
+            f.write(response.content)
+        print(f"Video downloaded and saved to: {temp_video_path}")
+
+        # Step 1: Create a media container
+        container_url = f'https://graph.facebook.com/v18.0/{INSTAGRAM_BUSINESS_ACCOUNT_ID}/media'
+        container_params = {
+            'video_url': video_url,
+            'caption': 'Created with Social Media Maker',
+            'access_token': INSTAGRAM_ACCESS_TOKEN
+        }
+        
+        print("Attempting to create media container")
+        print(f"Container URL: {container_url}")
+        print(f"Container Params: {container_params}")
+        
+        container_response = requests.post(container_url, params=container_params)
+        print(f"Container Response Status: {container_response.status_code}")
+        print(f"Container Response Text: {container_response.text}")
+        
+        if container_response.status_code != 200:
+            print(f"Error: Failed to create media container. Status code: {container_response.status_code}")
+            print(f"Response content: {container_response.text}")
+            os.remove(temp_video_path)
+            return jsonify({'error': f'Failed to create media container. Status code: {container_response.status_code}'}), 400
+
+        try:
+            container_data = container_response.json()
+            container_id = container_data.get('id')
+            if not container_id:
+                raise ValueError("No container ID in response")
+        except (json.JSONDecodeError, ValueError) as e:
+            print(f"Error parsing container response: {str(e)}")
+            print(f"Raw response: {container_response.text}")
+            os.remove(temp_video_path)
+            return jsonify({'error': 'Invalid response from Instagram API'}), 400
+
+        print(f"Media container created successfully. Container ID: {container_id}")
+        
+        # Step 2: Check container status
+        status_url = f'https://graph.facebook.com/v18.0/{container_id}'
+        status_params = {
+            'fields': 'status_code',
+            'access_token': INSTAGRAM_ACCESS_TOKEN
+        }
+
+        # Poll for status
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            print(f"Checking container status. Attempt {attempt + 1}/{max_attempts}")
+            status_response = requests.get(status_url, params=status_params)
+            print(f"Status Response Status: {status_response.status_code}")
+            print(f"Status Response Text: {status_response.text}")
+            
+            if status_response.status_code != 200:
+                print(f"Error: Failed to check container status. Status code: {status_response.status_code}")
+                print(f"Response content: {status_response.text}")
+                os.remove(temp_video_path)
+                return jsonify({'error': f'Failed to check container status. Status code: {status_response.status_code}'}), 400
+
+            try:
+                status_data = status_response.json()
+                status = status_data.get('status_code')
+            except json.JSONDecodeError as e:
+                print(f"Error parsing status response: {str(e)}")
+                print(f"Raw response: {status_response.text}")
+                os.remove(temp_video_path)
+                return jsonify({'error': 'Invalid status response from Instagram API'}), 400
+
+            print(f"Current status: {status}")
+            if status == 'FINISHED':
+                break
+            elif status == 'ERROR':
+                print("Error: Media container processing failed")
+                os.remove(temp_video_path)
+                return jsonify({'error': 'Media container processing failed'}), 400
+            
+            time.sleep(2)  # Wait 2 seconds before checking again
+
+        # Step 3: Publish the media
+        publish_url = f'https://graph.facebook.com/v18.0/{INSTAGRAM_BUSINESS_ACCOUNT_ID}/media_publish'
+        publish_params = {
+            'creation_id': container_id,
+            'access_token': INSTAGRAM_ACCESS_TOKEN
+        }
+
+        print("Attempting to publish media")
+        print(f"Publish URL: {publish_url}")
+        print(f"Publish Params: {publish_params}")
+        
+        publish_response = requests.post(publish_url, params=publish_params)
+        print(f"Publish Response Status: {publish_response.status_code}")
+        print(f"Publish Response Text: {publish_response.text}")
+        
+        os.remove(temp_video_path)  # Clean up temporary file
+        print(f"Temporary file removed: {temp_video_path}")
+
+        if publish_response.status_code != 200:
+            print(f"Error: Failed to publish to Instagram. Status code: {publish_response.status_code}")
+            print(f"Response content: {publish_response.text}")
+            return jsonify({'error': f'Failed to publish to Instagram. Status code: {publish_response.status_code}'}), 400
+
+        try:
+            publish_data = publish_response.json()
+            if 'id' not in publish_data:
+                raise ValueError("No post ID in response")
+        except (json.JSONDecodeError, ValueError) as e:
+            print(f"Error parsing publish response: {str(e)}")
+            print(f"Raw response: {publish_response.text}")
+            return jsonify({'error': 'Invalid publish response from Instagram API'}), 400
+
+        print("Video posted to Instagram successfully")
+        return jsonify({'success': True, 'message': 'Video posted to Instagram successfully'})
+
+    except Exception as e:
+        print(f"Error in post_to_instagram: {str(e)}")
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/background_music/<path:filename>')
 def serve_background_music(filename):
     print(f"Attempting to serve audio file: {filename}")
@@ -936,6 +1008,85 @@ def serve_background_music(filename):
         print(f"Error serving audio file: {str(e)}")
         return str(e), 404
 
+@app.route('/test-instagram-connection', methods=['POST'])
+def test_instagram_connection():
+    try:
+        # Initialize the client with more settings
+        cl = Client()
+        cl.delay_range = [1, 3]  # Add delay between actions to avoid rate limiting
+        
+        # Try to load settings from file
+        settings_file = 'instagram_settings.json'
+        if os.path.exists(settings_file):
+            try:
+                cl.load_settings(settings_file)
+                print("Successfully loaded settings from file")
+            except Exception as e:
+                print(f"Error loading settings: {str(e)}")
+                # If loading fails, we'll try to login normally
+        
+        # Login to Instagram with more detailed error handling
+        try:
+            print(f"Attempting to login with username: {INSTAGRAM_USERNAME}")
+            cl.login(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
+            print("Login successful")
+            
+            # Save settings after successful login
+            cl.dump_settings(settings_file)
+            print("Settings saved successfully")
+            
+            # Test account info retrieval
+            account_info = cl.account_info()
+            print(f"Account info retrieved: {account_info.username}")
+            
+        except LoginRequired as e:
+            print(f"Login required error: {str(e)}")
+            return jsonify({'error': f'Login failed: {str(e)}'}), 401
+        except ClientError as e:
+            print(f"Client error: {str(e)}")
+            return jsonify({'error': f'Client error: {str(e)}'}), 400
+        except Exception as e:
+            print(f"Unexpected error during login: {str(e)}")
+            return jsonify({'error': f'Unexpected error: {str(e)}'}), 500
+
+        # Check if output.mp4 exists
+        video_path = 'output.mp4'
+        if not os.path.exists(video_path):
+            print(f"Video file not found at path: {video_path}")
+            return jsonify({'error': 'output.mp4 file not found'}), 400
+
+        # Upload the video
+        try:
+            print("Attempting to upload video...")
+            # Upload the video with a test caption
+            media = cl.clip_upload(
+                path=video_path,
+                caption="Test post from Social Media Maker"
+            )
+            print(f"Video uploaded successfully. Media ID: {media.pk}")
+            
+            # Get the media info to confirm it was posted
+            media_info = cl.media_info(media.pk)
+            print(f"Media info retrieved: {media_info}")
+            
+            return jsonify({
+                'success': True,
+                'message': 'Video posted to Instagram successfully',
+                'media_id': media.pk,
+                'media_url': f'https://instagram.com/p/{media.code}'
+            })
+            
+        except Exception as e:
+            print(f"Error uploading video: {str(e)}")
+            return jsonify({'error': f'Failed to upload video: {str(e)}'}), 500
+
+    except Exception as e:
+        print(f"Unexpected error in test_instagram_connection: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        # Ensure we always return a JSON response
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
