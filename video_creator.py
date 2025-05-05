@@ -7,6 +7,7 @@ import tempfile
 from urllib.parse import quote
 from instagrapi import Client
 from instagrapi.exceptions import LoginRequired, ClientError
+from moviepy.editor import VideoFileClip  # Added for VideoFileClip import
 
 # Add music file paths
 MUSIC_CHOICES = {
@@ -198,6 +199,17 @@ def create_image_grid(image_paths, labels, size=(1080, 1620), duration=5):
 def post_to_instagram(video_path, caption):
     """Post a video to Instagram"""
     try:
+        # Extract thumbnail at 2 seconds
+        thumbnail_path = "thumbnail.jpg"
+        try:
+            clip = VideoFileClip(video_path)
+            frame = clip.get_frame(2)  # 2 seconds in
+            im = Image.fromarray(frame)
+            im.save(thumbnail_path, "JPEG")
+        except Exception as e:
+            print(f"Error extracting thumbnail: {e}")
+            thumbnail_path = None
+
         # Initialize the client
         cl = Client()
         cl.delay_range = [1, 3]  # Add delay between actions to avoid rate limiting
@@ -236,7 +248,8 @@ def post_to_instagram(video_path, caption):
             print("Attempting to upload video...")
             media = cl.clip_upload(
                 path=video_path,
-                caption=caption
+                caption=caption,
+                thumbnail=thumbnail_path if thumbnail_path else None
             )
             print(f"Video uploaded successfully. Media ID: {media.pk}")
             
@@ -309,10 +322,10 @@ def create_video(title, labels, output_path="output.mp4", music_choice='1', post
             pass
     
     # Create caption
-    caption = f"{title}\n\n"
+    caption = "Use PortableDocs to converse with your PDF. No need to read hours of documents.\nSearch PortableDocs or head to link in bio.\n\n#fyp #foryou #productivity #viral #trending\n\n"
+    caption += f"{title}\n\n"
     for label in labels:
         caption += f"#{label.replace(' ', '')} "
-    caption += "\n\n#fyp #foryou #productivity #viral #trending"
     
     # Print hashtags and caption for easy copying
     print("\n\n=== Copy and paste this caption ===")
@@ -320,7 +333,9 @@ def create_video(title, labels, output_path="output.mp4", music_choice='1', post
     
     # Post to Instagram if requested
     if post_to_ig:
-        success, message = post_to_instagram(output_path, caption)
+        caption = "Use PortableDocs to converse with your PDF. No need to read hours of documents.\nSearch PortableDocs or head to link in bio.\n\n#fyp #foryou #productivity #viral #trending\n\n"
+        caption += f"{title}\n\n" + " ".join(f"#{label.replace(' ', '')}" for label in labels)
+        success, message = post_to_instagram("output.mp4", caption)
         print(f"\nInstagram posting result: {message}")
     
     print("\nVideo creation complete! 🎥")
@@ -328,12 +343,12 @@ def create_video(title, labels, output_path="output.mp4", music_choice='1', post
 # Example usage
 if __name__ == "__main__":
     # Hardcoded title and labels - Edit these values to change the content
-    title = "People with these degrees are happiest"
+    title = "Popular productivity skills"
     labels = [
-        "Art",
-        "Criminology",
-        "Psychology",
-        "Exercise Science",
+        "Coding",
+        "Writing",
+        "Reading",
+        "Exercise",
     ]
     
     # Get music choice from user
@@ -356,5 +371,7 @@ if __name__ == "__main__":
         post_to_ig = input("Would you like to post this video to Instagram? (y/n): ").lower()
     
     if post_to_ig == 'y':
-        success, message = post_to_instagram("output.mp4", f"{title}\n\n" + " ".join(f"#{label.replace(' ', '')}" for label in labels) + "\n\n#fyp #foryou #productivity #viral #trending")
+        caption = "Use PortableDocs to converse with your PDF. No need to read hours of documents.\nSearch PortableDocs or head to link in bio.\n\n#fyp #foryou #productivity #viral #trending\n\n"
+        caption += f"{title}\n\n" + " ".join(f"#{label.replace(' ', '')}" for label in labels)
+        success, message = post_to_instagram("output.mp4", caption)
         print(f"\nInstagram posting result: {message}")
